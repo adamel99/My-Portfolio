@@ -36,7 +36,7 @@ const SkillBar = ({ skill, level, color }) => {
   const theme = useTheme();
   return (
     <Box sx={{ mb: 0 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: 0.75 }}>
         <Typography sx={{ fontSize: "0.82rem", fontWeight: 600, color: theme.palette.text.primary, fontFamily: "monospace" }}>{skill}</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: color || theme.palette.tertiary.main, fontWeight: 700, fontFamily: "monospace" }}>{level}%</Typography>
       </Box>
