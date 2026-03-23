@@ -354,7 +354,7 @@ const Skills = () => {
                     {project.image && (
                       <Grid item xs={12} md={5}>
                         <Box sx={{
-                          height: { xs: 220, md: "100%" }, minHeight: { md: 360 },
+                          height: { xs: 50, md: "100%" }, minHeight: { md: 100 },
                           background: "rgba(0,0,0,0.4)",
                           position: "relative", overflow: "hidden",
                           borderRight: { md: "1px solid rgba(255,255,255,0.05)" },
@@ -363,7 +363,7 @@ const Skills = () => {
                             component="img"
                             src={project.image}
                             alt={project.title}
-                            sx={{ width: "100%", height: "100%", objectFit: "contain", p: 3, opacity: 0.92 }}
+                            sx={{ width: "100%", height: "100%", objectFit: "contain", p: 10, opacity: 0.92 }}
                           />
                           <Box sx={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${project.color}08, transparent)` }} />
                         </Box>

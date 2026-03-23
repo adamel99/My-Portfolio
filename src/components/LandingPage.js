@@ -491,7 +491,7 @@ const Certs = () => {
                   {/* Image */}
                   <Box sx={{ position: "relative", paddingTop: "58%", background: "rgba(0,0,0,0.45)", overflow: "hidden" }}>
                     <Box component="img" src={cert.image} alt={cert.title}
-                      sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", p: 3 }} />
+                      sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", p: 6 }} />
                     <Box sx={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "40%", background: `linear-gradient(transparent, rgba(0,0,0,0.6))` }} />
                     <Box sx={{
                       position: "absolute", top: 14, right: 14,
