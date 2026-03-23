@@ -127,7 +127,7 @@ const sections = [
     icon: <MusicNote sx={{ fontSize: 22 }} />,
     title: "Music Producer",
     subtitle: "Where It All Started",
-    body: "Music production was my first creative outlet — and ironically, conversations with producer friends about software security gaps are part of what sparked my interest in cybersecurity.",
+    body: "Music production was my first creative outlet — and ironically, conversations with producer friends about software security gaps are part of what sparked my interest in cybersecurity. Over 2,000,000 streams total!",
     skills: ["Production", "Sound Design", "Mixing", "Mastering"],
     color: "#FDCFF3",
   },

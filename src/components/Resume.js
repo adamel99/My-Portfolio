@@ -38,7 +38,7 @@ const Orb = ({ size, top, left, right, bottom, color, delay = 0, opacity = 1 }) 
 
 const Label = ({ text, color }) => (
   <Typography sx={{
-    fontFamily: "monospace", fontSize: "0.68rem", fontWeight: 700,
+    fontFamily: "monospace", fontSize: "0.8rem", fontWeight: 700,
     letterSpacing: "0.18em", textTransform: "uppercase",
     color: color, mb: 2,
   }}>
@@ -61,7 +61,7 @@ const Section = ({ label, title, color, children }) => {
         <Label text={label} color={color || theme.palette.tertiary.main} />
         <Typography sx={{
           fontWeight: 900,
-          fontSize: { xs: "1.8rem", md: "2.6rem" },
+          fontSize: { xs: "1.95rem", md: "2.75rem" },
           letterSpacing: "-0.03em", lineHeight: 1.1, mb: 6,
           color: theme.palette.text.primary,
         }}>
@@ -102,13 +102,13 @@ const SkillRow = ({ label, items, color }) => {
   return (
     <Box sx={{ mb: 3 }}>
       <Typography sx={{
-        fontSize: "0.68rem", fontFamily: "monospace", fontWeight: 700,
+        fontSize: "0.8rem", fontFamily: "monospace", fontWeight: 700,
         color: color || theme.palette.tertiary.main,
         letterSpacing: "0.12em", textTransform: "uppercase", mb: 1.25,
       }}>
         {label}
       </Typography>
-      <Typography sx={{ fontSize: "0.88rem", color: theme.palette.text.secondary, lineHeight: 1.8 }}>
+      <Typography sx={{ fontSize: "1rem", color: theme.palette.text.secondary, lineHeight: 1.8 }}>
         {items}
       </Typography>
     </Box>
@@ -183,7 +183,7 @@ const projects = [
     subtitle: "Personal portfolio and resume showcase",
     date: "Oct 2024 – Dec 2024",
     color: "#7B61FF",
-    link: "https://adamportfolio-xknb.onrender.com/",
+    link: "https://lively-meerkat-2d2686.netlify.app/",
     desc: [
       "Designed and implemented backend APIs with PostgreSQL, Sequelize, and Node.js.",
       "Applied secure coding practices including input sanitization, error handling, and authentication workflows.",
@@ -270,7 +270,7 @@ const Resume = () => {
         {/* Professional Summary */}
         <Section label="Overview" title="Professional Summary" color={theme.palette.tertiary.main}>
           <Card color={theme.palette.tertiary.main}>
-            <Typography sx={{ fontSize: "0.92rem", color: theme.palette.text.secondary, lineHeight: 1.9 }}>
+            <Typography sx={{ fontSize: "1.05rem", color: theme.palette.text.secondary, lineHeight: 1.9 }}>
               CompTIA Security+ certified cybersecurity professional specializing in incident response,
               threat detection, and security monitoring. Combines hands-on experience in digital forensics,
               malware analysis, and network defense with technical proficiency in SIEM platforms, packet
@@ -285,32 +285,32 @@ const Resume = () => {
           <Card color={theme.palette.accent.main}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1, mb: 2 }}>
               <Box>
-                <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: theme.palette.text.primary, mb: 0.4 }}>
+                <Typography sx={{ fontWeight: 800, fontSize: "1.22rem", color: theme.palette.text.primary, mb: 0.4 }}>
                   New Jersey Institute of Technology
                 </Typography>
-                <Typography sx={{ fontSize: "0.82rem", color: theme.palette.accent.main, fontFamily: "monospace", fontWeight: 600 }}>
+                <Typography sx={{ fontSize: "0.95rem", color: theme.palette.accent.main, fontFamily: "monospace", fontWeight: 600 }}>
                   CompTIA Security+ Cybersecurity Certificate
                 </Typography>
               </Box>
               <Box sx={{ px: 1.5, py: 0.5, background: `${theme.palette.accent.main}0A`, border: `1px solid ${theme.palette.accent.main}20`, borderRadius: "6px" }}>
-                <Typography sx={{ fontFamily: "monospace", fontSize: "0.65rem", color: theme.palette.accent.main, letterSpacing: "0.06em" }}>
+                <Typography sx={{ fontFamily: "monospace", fontSize: "0.78rem", color: theme.palette.accent.main, letterSpacing: "0.06em" }}>
                   Feb 2025 – Nov 2025
                 </Typography>
               </Box>
             </Box>
 
-            <Typography sx={{ fontSize: "0.78rem", color: theme.palette.text.disabled, mb: 2.5, fontFamily: "monospace" }}>
+            <Typography sx={{ fontSize: "0.9rem", color: theme.palette.text.disabled, mb: 2.5, fontFamily: "monospace" }}>
               Newark, New Jersey
             </Typography>
 
             <Divider sx={{ borderColor: "rgba(255,255,255,0.05)", mb: 2.5 }} />
 
-            <Typography sx={{ fontSize: "0.68rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 1.5 }}>
+            <Typography sx={{ fontSize: "0.8rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 1.5 }}>
               Key Courses
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {["Threat Hunting & Intelligence", "Incident Response & Digital Forensics", "Computer Networking Fundamentals", "Security Information & Event Management"].map((course) => (
-                <Box key={course} sx={{ px: 1.4, py: 0.5, fontSize: "0.72rem", fontFamily: "monospace", color: theme.palette.accent.main, background: `${theme.palette.accent.main}0A`, border: `1px solid ${theme.palette.accent.main}18`, borderRadius: "5px" }}>
+                <Box key={course} sx={{ px: 1.4, py: 0.5, fontSize: "0.85rem", fontFamily: "monospace", color: theme.palette.accent.main, background: `${theme.palette.accent.main}0A`, border: `1px solid ${theme.palette.accent.main}18`, borderRadius: "5px" }}>
                   {course}
                 </Box>
               ))}
@@ -323,18 +323,19 @@ const Resume = () => {
           <Stack spacing={3}>
             {/* Cert chips */}
             <Card color={theme.palette.primary.main}>
-              <Typography sx={{ fontSize: "0.68rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 2 }}>
+              <Typography sx={{ fontSize: "0.8rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 2 }}>
                 Certifications
               </Typography>
               <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
                 {[
-                  { label: "CompTIA Security+", color: theme.palette.tertiary.main, icon: <VerifiedUser sx={{ fontSize: 14 }} /> },
-                  { label: "TDX Arena IR Expert", color: theme.palette.primary.main, icon: <Shield sx={{ fontSize: 14 }} /> },
-                  { label: "Completing AWS Cloud Practitioner cert", color: theme.palette.accent.main, icon: <Cloud sx={{ fontSize: 14 }} /> },
+                  { label: "CompTIA Security+", color: theme.palette.tertiary.main, icon: <VerifiedUser sx={{ fontSize: 16 }} /> },
+                  { label: "TDX Arena IR Expert", color: theme.palette.primary.main, icon: <Shield sx={{ fontSize: 16 }} /> },
+                  { label: "NJIT Cybersecurity Program", color: theme.palette.success.main, icon: <School sx={{ fontSize: 16 }} /> },
+                  { label: "Completing AWS Cloud Practitioner cert", color: theme.palette.accent.main, icon: <Cloud sx={{ fontSize: 16 }} /> },
                 ].map((cert) => (
                   <Box key={cert.label} sx={{ display: "flex", alignItems: "center", gap: 0.75, px: 2, py: 1, background: `${cert.color}0A`, border: `1px solid ${cert.color}22`, borderRadius: "8px" }}>
                     <Box sx={{ color: cert.color }}>{cert.icon}</Box>
-                    <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, color: theme.palette.text.primary, fontFamily: "monospace" }}>{cert.label}</Typography>
+                    <Typography sx={{ fontSize: "0.95rem", fontWeight: 700, color: theme.palette.text.primary, fontFamily: "monospace" }}>{cert.label}</Typography>
                   </Box>
                 ))}
               </Stack>
@@ -342,7 +343,7 @@ const Resume = () => {
 
             {/* Skills grid */}
             <Card color={theme.palette.tertiary.main}>
-              <Typography sx={{ fontSize: "0.68rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 3 }}>
+              <Typography sx={{ fontSize: "0.8rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.12em", textTransform: "uppercase", mb: 3 }}>
                 Technical Skills
               </Typography>
               <Grid container spacing={3}>
@@ -420,19 +421,19 @@ const Resume = () => {
                             transition={{ duration: 2.5, repeat: Infinity }}
                             sx={{ width: 5, height: 5, borderRadius: "50%", background: proj.color, boxShadow: `0 0 6px ${proj.color}` }}
                           />
-                          <Typography sx={{ fontFamily: "monospace", fontSize: "0.6rem", color: proj.color, fontWeight: 700, letterSpacing: "0.12em" }}>
+                          <Typography sx={{ fontFamily: "monospace", fontSize: "0.73rem", color: proj.color, fontWeight: 700, letterSpacing: "0.12em" }}>
                             COMPLETE
                           </Typography>
                         </Box>
-                        <Typography sx={{ fontWeight: 900, fontSize: { xs: "1.1rem", md: "1.4rem" }, color: theme.palette.text.primary, letterSpacing: "-0.02em", lineHeight: 1.15, mb: 0.5 }}>
+                        <Typography sx={{ fontWeight: 900, fontSize: { xs: "1.22rem", md: "1.52rem" }, color: theme.palette.text.primary, letterSpacing: "-0.02em", lineHeight: 1.15, mb: 0.5 }}>
                           {proj.name}
                         </Typography>
-                        <Typography sx={{ fontSize: "0.72rem", fontFamily: "monospace", color: theme.palette.text.disabled }}>
+                        <Typography sx={{ fontSize: "0.85rem", fontFamily: "monospace", color: theme.palette.text.disabled }}>
                           {proj.subtitle}
                         </Typography>
                       </Box>
                       <Box sx={{ px: 1.5, py: 0.5, background: `${proj.color}0A`, border: `1px solid ${proj.color}18`, borderRadius: "6px", flexShrink: 0 }}>
-                        <Typography sx={{ fontFamily: "monospace", fontSize: "0.62rem", color: proj.color, letterSpacing: "0.04em" }}>
+                        <Typography sx={{ fontFamily: "monospace", fontSize: "0.75rem", color: proj.color, letterSpacing: "0.04em" }}>
                           {proj.date}
                         </Typography>
                       </Box>
@@ -442,7 +443,7 @@ const Resume = () => {
                     {proj.link && (
                       <Box sx={{ mb: 2.5 }}>
                         <Link href={proj.link} target="_blank" rel="noopener"
-                          sx={{ fontFamily: "monospace", fontSize: "0.78rem", color: proj.color, textDecoration: "none", display: "flex", alignItems: "center", gap: 0.5, "&:hover": { opacity: 0.75 } }}>
+                          sx={{ fontFamily: "monospace", fontSize: "0.9rem", color: proj.color, textDecoration: "none", display: "flex", alignItems: "center", gap: 0.5, "&:hover": { opacity: 0.75 } }}>
                           → {proj.link}
                         </Link>
                       </Box>
@@ -455,7 +456,7 @@ const Resume = () => {
                       {proj.desc.map((d, j) => (
                         <Box key={j} sx={{ display: "flex", alignItems: "flex-start", gap: 1.75 }}>
                           <Box sx={{ width: 4, height: 4, borderRadius: "50%", background: proj.color, flexShrink: 0, mt: 0.72, opacity: 0.65 }} />
-                          <Typography sx={{ fontSize: "0.87rem", color: theme.palette.text.secondary, lineHeight: 1.75 }}>
+                          <Typography sx={{ fontSize: "1rem", color: theme.palette.text.secondary, lineHeight: 1.75 }}>
                             {d}
                           </Typography>
                         </Box>
