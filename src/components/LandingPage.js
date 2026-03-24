@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Security, Code, Audiotrack, ArrowForward,
   Shield, VerifiedUser, Terminal, GitHub, Email,
-  KeyboardArrowDown, CheckCircle, NorthEast,
+  KeyboardArrowDown, CheckCircle, NorthEast, LinkedIn,
 } from "@mui/icons-material";
 import { useHistory } from "react-router-dom";
 
@@ -213,7 +213,7 @@ const Hero = () => {
                 <Button
                   onClick={() => history.push("/resume")}
                   sx={{
-                    fontSize: "0.88rem", fontFamily: "monospace",
+                    fontSize: "1.2rem", fontFamily: "monospace",
                     color: theme.palette.text.secondary,
                     textDecoration: "underline",
                     textDecorationColor: "rgba(255,255,255,0.15)",
@@ -229,7 +229,14 @@ const Hero = () => {
                   target="_blank"
                   sx={{ color: theme.palette.text.disabled, minWidth: "auto", p: 1, "&:hover": { color: theme.palette.text.primary, background: "transparent" } }}
                 >
-                  <GitHub sx={{ fontSize: 20 }} />
+                  <GitHub sx={{ fontSize: 30 }} />
+                </Button>
+                <Button
+                href="https://www.linkedin.com/in/adam-elhamami-33767029a/"
+                target="_blank"
+                sx={{ color: theme.palette.text.disabled, minWidth: "auto", p: 1, "&:hover": { color: theme.palette.text.primary, background: "transparent" } }}
+                >
+                  <LinkedIn sx={{ fontSize: 30 }} />
                 </Button>
               </Stack>
             </motion.div>
@@ -613,6 +620,21 @@ const ContactCTA = () => {
               }}
             >
               GitHub Profile
+            </Button>
+            <Button
+              href="https://www.linkedin.com/in/adam-elhamami-33767029a/"
+              target="_blank"
+              startIcon={<LinkedIn sx={{ fontSize: 18 }} />}
+              sx={{
+                fontSize: "0.9rem", fontFamily: "monospace",
+                color: theme.palette.text.secondary,
+                textDecoration: "underline",
+                textDecorationColor: "rgba(255,255,255,0.15)",
+                textUnderlineOffset: "4px",
+                "&:hover": { color: theme.palette.text.primary, background: "transparent", textDecorationColor: "rgba(255,255,255,0.4)" },
+              }}
+            >
+              LinkedIn
             </Button>
           </Stack>
         </motion.div>

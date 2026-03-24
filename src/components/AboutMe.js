@@ -135,7 +135,7 @@ const sections = [
 
 const socialLinks = [
   { icon: <GitHub sx={{ fontSize: 20 }} />, url: "https://github.com/adamel99", label: "GitHub" },
-  { icon: <LinkedIn sx={{ fontSize: 20 }} />, url: "#", label: "LinkedIn" },
+  { icon: <LinkedIn sx={{ fontSize: 20 }} />, url: "https://www.linkedin.com/in/adam-elhamami-33767029a/", label: "LinkedIn" },
   { icon: <Email sx={{ fontSize: 20 }} />, url: "mailto:adamelh1999@gmail.com", label: "Email" },
 ];
 
