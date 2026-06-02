@@ -1,55 +1,133 @@
-import React from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Box, Typography, Container, Grid, Stack, Divider } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Code, Database, Shield, Music, Terminal, Palette } from "lucide-react";
 
-// ── Shared backgrounds ──────────────────────────────────────────
+// ─────────────────────────────────────────────
+// SHARED PRIMITIVES
+// ─────────────────────────────────────────────
 
-const GridBg = () => (
+const NoiseOverlay = () => (
+  <Box sx={{
+    position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", opacity: 0.03,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+    backgroundSize: "256px 256px",
+  }} />
+);
+
+const GridBg = ({ opacity = 0.018 }) => (
   <Box sx={{
     position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
     backgroundImage: `
-      linear-gradient(rgba(0,187,249,0.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,187,249,0.022) 1px, transparent 1px)
+      linear-gradient(rgba(0,187,249,${opacity}) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,187,249,${opacity}) 1px, transparent 1px)
     `,
-    backgroundSize: "80px 80px",
+    backgroundSize: "72px 72px",
   }} />
 );
 
 const Orb = ({ size, top, left, right, bottom, color, delay = 0, opacity = 1 }) => (
   <motion.div
-    animate={{ scale: [1, 1.1, 1], opacity: [opacity * 0.65, opacity, opacity * 0.65] }}
-    transition={{ duration: 16, repeat: Infinity, delay, ease: "easeInOut" }}
+    animate={{ scale: [1, 1.12, 1], opacity: [opacity * 0.65, opacity, opacity * 0.65] }}
+    transition={{ duration: 18, repeat: Infinity, delay, ease: "easeInOut" }}
     style={{
       position: "absolute", width: size, height: size,
       top, left, right, bottom, borderRadius: "50%",
-      background: color, filter: "blur(120px)",
+      background: color, filter: "blur(130px)",
       pointerEvents: "none", zIndex: 0,
     }}
   />
 );
 
-// ── Skill bar ───────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// SPOTLIGHT CARD
+// ─────────────────────────────────────────────
+
+const SpotlightCard = ({ children, color = "#00BBF9", sx = {}, onClick }) => {
+  const cardRef = useRef(null);
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMouse({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <Box
+      ref={cardRef}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      sx={{
+        position: "relative",
+        borderRadius: "18px",
+        border: "1px solid rgba(255,255,255,0.055)",
+        background: "linear-gradient(160deg, rgba(255,255,255,0.022) 0%, rgba(255,255,255,0.008) 100%)",
+        overflow: "hidden",
+        cursor: onClick ? "pointer" : "default",
+        transition: "border-color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease",
+        "&:hover": {
+          border: `1px solid ${color}25`,
+          transform: "translateY(-4px)",
+          boxShadow: `0 28px 72px rgba(0,0,0,0.55), 0 0 0 1px ${color}12`,
+        },
+        ...sx,
+      }}
+    >
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.22 }}
+        style={{
+          position: "absolute", pointerEvents: "none", zIndex: 0,
+          width: 320, height: 320, borderRadius: "50%",
+          background: `radial-gradient(circle, ${color}10 0%, transparent 70%)`,
+          left: mouse.x - 160, top: mouse.y - 160,
+        }}
+      />
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: "1px",
+          background: `linear-gradient(90deg, transparent, ${color}55, transparent)`,
+          zIndex: 2,
+        }}
+      />
+      <Box sx={{ position: "relative", zIndex: 1 }}>{children}</Box>
+    </Box>
+  );
+};
+
+// ─────────────────────────────────────────────
+// ANIMATED SKILL BAR
+// ─────────────────────────────────────────────
 
 const SkillBar = ({ skill, level, color }) => {
   const theme = useTheme();
   return (
-    <Box sx={{ mb: 0 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: 0.75 }}>
-        <Typography sx={{ fontSize: "0.82rem", fontWeight: 600, color: theme.palette.text.primary, fontFamily: "monospace" }}>{skill}</Typography>
-        <Typography sx={{ fontSize: "0.75rem", color: color || theme.palette.tertiary.main, fontWeight: 700, fontFamily: "monospace" }}>{level}%</Typography>
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.85 }}>
+        <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: theme.palette.text.secondary, fontFamily: "monospace", letterSpacing: "0.02em" }}>
+          {skill}
+        </Typography>
+        <Typography sx={{ fontSize: "0.7rem", color: color, fontWeight: 700, fontFamily: "monospace" }}>
+          {level}%
+        </Typography>
       </Box>
-      <Box sx={{ height: 5, background: "rgba(255,255,255,0.05)", borderRadius: "4px", overflow: "hidden" }}>
+      <Box sx={{ height: 4, background: "rgba(255,255,255,0.04)", borderRadius: "4px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.04)" }}>
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: `${level}%` }}
           viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.15 }}
+          transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
           style={{
             height: "100%",
-            background: color ? `linear-gradient(90deg, ${color}99, ${color})` : `linear-gradient(90deg, rgba(0,187,249,0.6), #00BBF9)`,
+            background: `linear-gradient(90deg, ${color}70, ${color})`,
             borderRadius: "4px",
+            boxShadow: `0 0 8px ${color}50`,
           }}
         />
       </Box>
@@ -57,57 +135,72 @@ const SkillBar = ({ skill, level, color }) => {
   );
 };
 
-// ── Section label ───────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// SECTION HEADER
+// ─────────────────────────────────────────────
 
-const Label = ({ text, color }) => {
+const SectionHeader = ({ eyebrow, title, color }) => {
   const theme = useTheme();
   return (
-    <Typography sx={{
-      fontFamily: "monospace", fontSize: "0.68rem", fontWeight: 700,
-      letterSpacing: "0.18em", textTransform: "uppercase",
-      color: color || theme.palette.text.disabled, mb: 2,
-    }}>
-      {text}
-    </Typography>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55 }}
+    >
+      <Box sx={{ mb: 10 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+          <Box sx={{ width: 18, height: 1, background: color, opacity: 0.6 }} />
+          <Typography sx={{ fontFamily: "monospace", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.2em", color }}>
+            {eyebrow}
+          </Typography>
+        </Box>
+        <Typography sx={{ fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.02, fontSize: { xs: "2.4rem", md: "3.4rem" } }}>
+          {title}
+        </Typography>
+      </Box>
+    </motion.div>
   );
 };
 
-// ── Data ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
 
 const skillCategories = [
   {
     name: "Cybersecurity",
-    icon: <Shield size={20} />,
+    icon: <Shield size={18} />,
     color: "#00BBF9",
     skills: ["Incident Response", "Windows Security", "Linux Security", "Threat Analysis", "Network Security", "Vulnerability Assessment", "Security Auditing", "SIEM"],
   },
   {
     name: "Frontend Development",
-    icon: <Code size={20} />,
+    icon: <Code size={18} />,
     color: "#FDCFF3",
     skills: ["React", "Redux", "Material-UI", "CSS3", "Framer Motion", "JavaScript ES6+", "XSS Prevention", "Secure Auth"],
   },
   {
     name: "Backend & Database",
-    icon: <Database size={20} />,
+    icon: <Database size={18} />,
     color: "#DC136C",
     skills: ["Node.js", "Express.js", "PostgreSQL", "MySQL", "REST APIs", "JWT Auth", "Rate Limiting", "API Security"],
   },
   {
     name: "Audio Engineering",
-    icon: <Music size={20} />,
+    icon: <Music size={18} />,
     color: "#7B61FF",
     skills: ["JUCE Framework", "C++", "DSP", "FFT Analysis", "Plugin Development", "Audio Production", "Mixing & Mastering"],
   },
   {
     name: "Development Tools",
-    icon: <Terminal size={20} />,
+    icon: <Terminal size={18} />,
     color: "#00BBF9",
     skills: ["Git", "VS Code", "Terminal / CLI", "AWS", "CI/CD", "Package Managers", "Env Security"],
   },
   {
     name: "Design & UI/UX",
-    icon: <Palette size={20} />,
+    icon: <Palette size={18} />,
     color: "#DC136C",
     skills: ["UI Design", "Component Architecture", "Visual Design", "User Experience", "Prototyping"],
   },
@@ -172,9 +265,9 @@ const projectData = [
   },
 ];
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // SKILLS PAGE
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 
 const Skills = () => {
   const theme = useTheme();
@@ -182,38 +275,60 @@ const Skills = () => {
   return (
     <Box sx={{ minHeight: "100vh", background: theme.palette.background.default, overflowX: "hidden" }}>
 
-      {/* ── HERO HEADER ── */}
-      <Box sx={{ position: "relative", pt: { xs: 14, md: 20 }, pb: { xs: 10, md: 16 }, overflow: "hidden" }}>
+      {/* ── HERO ── */}
+      <Box sx={{ position: "relative", pt: { xs: 14, md: 22 }, pb: { xs: 12, md: 18 }, overflow: "hidden" }}>
         <GridBg />
-        <Orb size={700} top="-20%" left="-15%"
-          color={`radial-gradient(circle, ${theme.palette.tertiary.main}40, ${theme.palette.accent.main}20, transparent 70%)`}
-          delay={0} opacity={0.85} />
-        <Orb size={500} bottom="-10%" right="-10%"
-          color={`radial-gradient(circle, ${theme.palette.primary.main}35, transparent 70%)`}
-          delay={6} opacity={0.8} />
+        <NoiseOverlay />
+        <Orb size={800} top="-22%" left="-18%"
+          color={`radial-gradient(circle, ${theme.palette.tertiary.main}45, ${theme.palette.accent.main}22, transparent 68%)`}
+          delay={0} opacity={0.85}
+        />
+        <Orb size={550} bottom="-12%" right="-12%"
+          color={`radial-gradient(circle, ${theme.palette.primary.main}38, transparent 68%)`}
+          delay={6} opacity={0.8}
+        />
 
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}>
-            <Label text="Technical Arsenal" color={theme.palette.tertiary.main} />
-            <Typography sx={{
-              fontWeight: 900,
-              fontSize: { xs: "3.5rem", sm: "5rem", md: "7rem" },
-              lineHeight: 0.95, letterSpacing: "-0.045em",
-              mb: 4,
-            }}>
-              <Box component="span" sx={{ color: theme.palette.text.primary }}>technical</Box>
-              <br />
-              <Box component="span" sx={{
-                background: `linear-gradient(100deg, ${theme.palette.tertiary.main}, ${theme.palette.accent.main} 50%, ${theme.palette.primary.main})`,
+        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
+          <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}>
+
+            {/* Eyebrow */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 5 }}>
+              <Box sx={{ width: 18, height: 1, background: theme.palette.tertiary.main, opacity: 0.6 }} />
+              <Typography sx={{ fontFamily: "monospace", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.2em", color: theme.palette.tertiary.main }}>
+                TECHNICAL ARSENAL
+              </Typography>
+            </Box>
+
+            {/* Headline */}
+            <Box sx={{ mb: 5 }}>
+              <Typography sx={{
+                fontWeight: 900, lineHeight: 0.93, letterSpacing: "-0.048em",
+                fontSize: { xs: "4rem", sm: "5.5rem", md: "7.5rem" },
+                color: theme.palette.text.primary,
+              }}>
+                technical
+              </Typography>
+              <Typography sx={{
+                fontWeight: 900, lineHeight: 0.93, letterSpacing: "-0.048em",
+                fontSize: { xs: "4rem", sm: "5.5rem", md: "7.5rem" },
+                background: `linear-gradient(110deg, ${theme.palette.tertiary.main} 0%, ${theme.palette.accent.main} 50%, ${theme.palette.primary.main} 100%)`,
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 4s ease infinite",
+                "@keyframes shimmer": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
               }}>
                 expertise
-              </Box>
-            </Typography>
+              </Typography>
+            </Box>
+
             <Typography sx={{
-              fontSize: { xs: "1rem", md: "1.1rem" },
+              fontSize: { xs: "0.95rem", md: "1.05rem" },
               color: theme.palette.text.secondary,
-              maxWidth: 520, lineHeight: 1.85,
+              maxWidth: 500, lineHeight: 1.9, letterSpacing: "0.005em",
             }}>
               Multi-domain skill set spanning cybersecurity, full-stack development,
               and audio engineering — with a security-first approach throughout.
@@ -223,88 +338,78 @@ const Skills = () => {
       </Box>
 
       {/* ── SKILL CATEGORIES ── */}
-      <Box sx={{ py: { xs: 10, md: 14 }, position: "relative" }}>
+      <Box sx={{ py: { xs: 12, md: 16 }, position: "relative" }}>
         <GridBg />
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
 
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <Label text="Core Competencies" color={theme.palette.primary.main} />
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: "2rem", md: "3rem" }, letterSpacing: "-0.03em", mb: 8 }}>
-              Skills Overview
-            </Typography>
-          </motion.div>
+          <SectionHeader eyebrow="CORE COMPETENCIES" title="Skills Overview" color={theme.palette.primary.main} />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={2.5}>
             {skillCategories.map((cat, i) => (
               <Grid item xs={12} sm={6} lg={4} key={i}>
                 <motion.div
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
-                  transition={{ delay: i * 0.08, duration: 0.5 }}
+                  transition={{ delay: i * 0.07, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                   style={{ height: "100%" }}
                 >
-                  <Box sx={{
-                    height: "100%", p: 3.5, borderRadius: "16px",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    background: `linear-gradient(150deg, rgba(255,255,255,0.025), ${cat.color}06)`,
-                    transition: "all 0.22s ease",
-                    display: "flex", flexDirection: "column", gap: 2.5,
-                    "&:hover": {
-                      border: `1px solid ${cat.color}22`,
-                      boxShadow: `0 16px 48px rgba(0,0,0,0.4), 0 0 28px ${cat.color}08`,
-                      transform: "translateY(-3px)",
-                    },
-                  }}>
-                    {/* Header */}
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.75 }}>
-                      <Box sx={{
-                        p: 1.4,
-                        background: `${cat.color}0E`,
-                        border: `1px solid ${cat.color}18`,
-                        borderRadius: "10px",
-                        color: cat.color, display: "flex",
-                      }}>
-                        {cat.icon}
+                  <SpotlightCard color={cat.color} sx={{ height: "100%", p: 0 }}>
+                    <Box sx={{ p: 3.5, display: "flex", flexDirection: "column", gap: 2.5, height: "100%" }}>
+
+                      {/* Header */}
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.75 }}>
+                        <Box sx={{
+                          p: 1.35, display: "flex",
+                          background: `${cat.color}0D`,
+                          border: `1px solid ${cat.color}1A`,
+                          borderRadius: "10px",
+                          color: cat.color,
+                          boxShadow: `0 0 12px ${cat.color}15`,
+                        }}>
+                          {cat.icon}
+                        </Box>
+                        <Typography sx={{ fontWeight: 800, fontSize: "0.95rem", color: theme.palette.text.primary, letterSpacing: "-0.01em" }}>
+                          {cat.name}
+                        </Typography>
                       </Box>
-                      <Typography sx={{ fontWeight: 800, fontSize: "0.98rem", color: theme.palette.text.primary }}>
-                        {cat.name}
-                      </Typography>
-                    </Box>
 
-                    <Divider sx={{ borderColor: "rgba(255,255,255,0.05)" }} />
+                      {/* Divider with color accent */}
+                      <Box sx={{ height: "1px", background: `linear-gradient(to right, ${cat.color}30, transparent)` }} />
 
-                    {/* Skills */}
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.85 }}>
-                      {cat.skills.map((skill, j) => (
-                        <motion.div
-                          key={j}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: j * 0.04 }}
-                        >
-                          <Box sx={{
-                            px: 1.4, py: 0.5,
-                            fontSize: "0.72rem", fontFamily: "monospace",
-                            color: theme.palette.text.secondary,
-                            background: "rgba(255,255,255,0.04)",
-                            border: "1px solid rgba(255,255,255,0.07)",
-                            borderRadius: "5px",
-                            letterSpacing: "0.02em",
-                            transition: "all 0.18s ease",
-                            "&:hover": {
-                              color: cat.color,
-                              background: `${cat.color}0C`,
-                              border: `1px solid ${cat.color}20`,
-                            },
-                          }}>
-                            {skill}
-                          </Box>
-                        </motion.div>
-                      ))}
+                      {/* Skill chips */}
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+                        {cat.skills.map((skill, j) => (
+                          <motion.div
+                            key={j}
+                            initial={{ opacity: 0, scale: 0.88 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.05 + j * 0.03, duration: 0.3 }}
+                          >
+                            <Box sx={{
+                              px: 1.35, py: 0.5,
+                              fontSize: "0.68rem", fontFamily: "monospace", letterSpacing: "0.025em",
+                              color: "rgba(255,255,255,0.7)",
+                              background: "rgba(255,255,255,0.03)",
+                              border: "1px solid rgba(255,255,255,0.065)",
+                              borderRadius: "5px",
+                              transition: "all 0.18s ease",
+                              cursor: "default",
+                              "&:hover": {
+                                color: cat.color,
+                                background: `${cat.color}0C`,
+                                border: `1px solid ${cat.color}22`,
+                                transform: "scale(1.03)",
+                              },
+                            }}>
+                              {skill}
+                            </Box>
+                          </motion.div>
+                        ))}
+                      </Box>
                     </Box>
-                  </Box>
+                  </SpotlightCard>
                 </motion.div>
               </Grid>
             ))}
@@ -313,110 +418,138 @@ const Skills = () => {
       </Box>
 
       {/* ── PROJECTS / CERTS ── */}
-      <Box sx={{ py: { xs: 10, md: 16 }, position: "relative", overflow: "hidden" }}>
+      <Box sx={{ py: { xs: 12, md: 18 }, position: "relative", overflow: "hidden" }}>
         <GridBg />
-        <Orb size={600} top="10%" right="-10%"
-          color={`radial-gradient(circle, ${theme.palette.accent.main}25, transparent 70%)`}
-          delay={4} opacity={0.8} />
+        <NoiseOverlay />
+        <Orb size={600} top="5%" right="-8%"
+          color={`radial-gradient(circle, ${theme.palette.accent.main}22, transparent 70%)`}
+          delay={4} opacity={0.8}
+        />
+        <Orb size={400} bottom="10%" left="-6%"
+          color={`radial-gradient(circle, ${theme.palette.primary.main}18, transparent 70%)`}
+          delay={9} opacity={0.6}
+        />
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
 
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <Label text="Featured Projects" color={theme.palette.accent.main} />
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: "2rem", md: "3rem" }, letterSpacing: "-0.03em", mb: 10 }}>
-              Technical Showcase
-            </Typography>
-          </motion.div>
+          <SectionHeader eyebrow="FEATURED PROJECTS" title="Technical Showcase" color={theme.palette.accent.main} />
 
-          <Stack spacing={5}>
+          <Stack spacing={4}>
             {projectData.map((project, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 32 }}
+                initial={{ opacity: 0, y: 36 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.55 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <Box sx={{
-                  borderRadius: "20px", overflow: "hidden",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  background: `linear-gradient(145deg, rgba(255,255,255,0.025), ${project.color}05)`,
-                  transition: "all 0.25s ease",
-                  "&:hover": {
-                    border: `1px solid ${project.color}22`,
-                    boxShadow: `0 24px 80px rgba(0,0,0,0.5), 0 0 40px ${project.color}08`,
-                    transform: "translateY(-3px)",
-                  },
-                }}>
+                <SpotlightCard color={project.color}>
                   <Grid container>
 
-                    {/* Left — image (if exists) */}
+                    {/* Image column */}
                     {project.image && (
-                      <Grid item xs={12} md={5}>
+                      <Grid item xs={12} md={3}>
                         <Box sx={{
-                          height: { xs: 50, md: "100%" }, minHeight: { md: 100 },
-                          background: "rgba(0,0,0,0.4)",
+                          height: { xs: 140, md: "100%" }, maxHeight: { md: 220 },
+                          background: "rgba(0,0,0,0.45)",
                           position: "relative", overflow: "hidden",
-                          borderRight: { md: "1px solid rgba(255,255,255,0.05)" },
+                          borderRight: { md: "1px solid rgba(255,255,255,0.04)" },
+                          borderBottom: { xs: "1px solid rgba(255,255,255,0.04)", md: "none" },
+                          borderRadius: { xs: "16px 16px 0 0", md: "16px 0 0 16px" },
                         }}>
                           <Box
                             component="img"
                             src={project.image}
                             alt={project.title}
-                            sx={{ width: "100%", height: "100%", objectFit: "contain", p: 10, opacity: 0.92 }}
+                            sx={{ width: "100%", height: "100%", objectFit: "contain", p: { xs: 3, md: 4 }, opacity: 0.9 }}
                           />
-                          <Box sx={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${project.color}08, transparent)` }} />
+                          {/* Color tint overlay */}
+                          <Box sx={{ position: "absolute", inset: 0, background: `linear-gradient(145deg, ${project.color}08, transparent 60%)` }} />
+                          {/* Bottom fade */}
+                          <Box sx={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "40%", background: "linear-gradient(transparent, rgba(8,8,14,0.6))", display: { xs: "block", md: "none" } }} />
                         </Box>
                       </Grid>
                     )}
 
-                    {/* Right — content */}
-                    <Grid item xs={12} md={project.image ? 7 : 12}>
-                      <Box sx={{ p: { xs: 3, md: 4.5 }, height: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
+                    {/* Content column */}
+                    <Grid item xs={12} md={project.image ? 9 : 12}>
+                      <Box sx={{ p: { xs: 3.5, md: 5 }, display: "flex", flexDirection: "column", gap: 3, height: "100%" }}>
 
                         {/* Status tag */}
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Box sx={{ px: 1.5, py: 0.4, fontSize: "0.6rem", fontFamily: "monospace", color: project.color, background: `${project.color}0C`, border: `1px solid ${project.color}22`, borderRadius: "4px", letterSpacing: "0.1em" }}>
+                          <Box sx={{
+                            display: "inline-flex", alignItems: "center", gap: 0.75,
+                            px: 1.4, py: 0.45,
+                            fontSize: "0.58rem", fontFamily: "monospace", letterSpacing: "0.12em",
+                            color: project.color,
+                            background: `${project.color}0C`,
+                            border: `1px solid ${project.color}20`,
+                            borderRadius: "5px",
+                          }}>
+                            <Box
+                              component={motion.div}
+                              animate={{ opacity: [1, 0.25, 1] }}
+                              transition={{ duration: 2.5, repeat: Infinity }}
+                              sx={{ width: 4, height: 4, borderRadius: "50%", background: project.color, boxShadow: `0 0 5px ${project.color}` }}
+                            />
                             COMPLETE
                           </Box>
                         </Box>
 
-                        {/* Title */}
+                        {/* Title block */}
                         <Box>
-                          <Typography sx={{ fontWeight: 900, fontSize: { xs: "1.5rem", md: "2rem" }, color: theme.palette.text.primary, letterSpacing: "-0.025em", lineHeight: 1.1, mb: 0.75 }}>
+                          <Typography sx={{
+                            fontWeight: 900, letterSpacing: "-0.028em", lineHeight: 1.08, mb: 0.75,
+                            fontSize: { xs: "1.55rem", md: "2.1rem" },
+                            color: theme.palette.text.primary,
+                          }}>
                             {project.title}
                           </Typography>
-                          <Typography sx={{ fontSize: "0.75rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.06em" }}>
+                          <Typography sx={{ fontSize: "0.7rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.05em" }}>
                             {project.subtitle}
                           </Typography>
                         </Box>
 
-                        {/* Description */}
-                        <Typography sx={{ fontSize: "0.9rem", color: theme.palette.text.secondary, lineHeight: 1.85 }}>
+                        <Typography sx={{ fontSize: "0.88rem", color: theme.palette.text.secondary, lineHeight: 1.88, letterSpacing: "0.004em" }}>
                           {project.desc}
                         </Typography>
 
                         {/* Highlights */}
                         <Box>
-                          <Typography sx={{ fontSize: "0.62rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.14em", mb: 1.5, textTransform: "uppercase" }}>
+                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 1.75, textTransform: "uppercase" }}>
                             Key Highlights
                           </Typography>
-                          <Stack spacing={1.1}>
+                          <Stack spacing={1.2}>
                             {project.highlights.map((h, j) => (
-                              <Box key={j} sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-                                <Box sx={{ width: 4, height: 4, borderRadius: "50%", background: project.color, flexShrink: 0, mt: 0.7, opacity: 0.7 }} />
-                                <Typography sx={{ fontSize: "0.85rem", color: theme.palette.text.secondary, lineHeight: 1.7 }}>{h}</Typography>
-                              </Box>
+                              <motion.div
+                                key={j}
+                                initial={{ opacity: 0, x: -8 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.08 + j * 0.06 }}
+                              >
+                                <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.75 }}>
+                                  <Box sx={{
+                                    flexShrink: 0, mt: 0.7,
+                                    width: 4, height: 4, borderRadius: "50%",
+                                    background: project.color, opacity: 0.65,
+                                    boxShadow: `0 0 6px ${project.color}`,
+                                  }} />
+                                  <Typography sx={{ fontSize: "0.85rem", color: theme.palette.text.secondary, lineHeight: 1.75 }}>
+                                    {h}
+                                  </Typography>
+                                </Box>
+                              </motion.div>
                             ))}
                           </Stack>
                         </Box>
 
                         {/* Skill bars */}
                         <Box>
-                          <Typography sx={{ fontSize: "0.62rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.14em", mb: 2, textTransform: "uppercase" }}>
+                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 2, textTransform: "uppercase" }}>
                             Proficiency
                           </Typography>
-                          <Grid container spacing={2}>
+                          <Grid container spacing={2.5}>
                             {project.skills.map((s, j) => (
                               <Grid item xs={12} sm={6} key={j}>
                                 <SkillBar skill={s.label} level={s.value} color={project.color} />
@@ -426,20 +559,25 @@ const Skills = () => {
                         </Box>
 
                         {/* Tech stack */}
-                        <Box sx={{ pt: 1, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                          <Typography sx={{ fontSize: "0.62rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.14em", mb: 1.5, textTransform: "uppercase" }}>
+                        <Box sx={{ pt: 2.5, borderTop: "1px solid rgba(255,255,255,0.045)", mt: "auto" }}>
+                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 1.5, textTransform: "uppercase" }}>
                             Tech Stack
                           </Typography>
-                          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.85 }}>
-                            {project.tech.map((t, j) => (
-                              <Box key={j} sx={{
-                                px: 1.4, py: 0.45,
-                                fontSize: "0.68rem", fontFamily: "monospace",
-                                color: project.color,
-                                background: `${project.color}0A`,
-                                border: `1px solid ${project.color}18`,
-                                borderRadius: "5px", letterSpacing: "0.03em",
-                              }}>
+                          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+                            {project.tech.map((t) => (
+                              <Box
+                                key={t}
+                                sx={{
+                                  px: 1.4, py: 0.45,
+                                  fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.04em",
+                                  color: project.color, fontWeight: 700,
+                                  background: `${project.color}09`,
+                                  border: `1px solid ${project.color}18`,
+                                  borderRadius: "5px",
+                                  transition: "all 0.18s ease",
+                                  "&:hover": { background: `${project.color}18`, border: `1px solid ${project.color}30` },
+                                }}
+                              >
                                 {t}
                               </Box>
                             ))}
@@ -448,7 +586,7 @@ const Skills = () => {
                       </Box>
                     </Grid>
                   </Grid>
-                </Box>
+                </SpotlightCard>
               </motion.div>
             ))}
           </Stack>
