@@ -24,8 +24,9 @@ function Navigation() {
   const navLinks = [
     { to: "/about", label: "About" },
     { to: "/skills", label: "Skills" },
-    { to: "/products", label: "Projects" },
+    { to: "/products", label: "Security" },
     { to: "/resume", label: "Resume" },
+    { to: "/plugins", label: "Plugins" },
   ];
 
   return (

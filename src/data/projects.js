@@ -7,15 +7,15 @@ const projects = [
     },
     {
       id: 2,
-      productName: "DoomsProd Music Store",
-      description: "Security-hardened full-stack e-commerce platform for selling beats, loop kits, and drum kits. Built with defense-in-depth architecture, OWASP best practices, JWT auth, and PCI-compliant Stripe payments.",
-      filePath: "/Images/beatpage.jpg",
+      productName: "Security Event Logger",
+      description: "Python-based CLI tool for parsing and monitoring system log files. Detects indicators of compromise including failed logins, privilege escalations, and anomalous process behavior with severity-classified, timestamped output formatted for analyst review.",
+      filePath: "/Images/eventlogger.jpg",
     },
     {
       id: 3,
-      productName: "Stereo Imager Plugin",
-      description: "Real-time stereo imaging VST plugin built with C++ and the JUCE framework. Implements mid/side processing, adjustable width controls, and smooth gain compensation for professional audio production.",
-      filePath: "/Images/Imager.jpg",
+      productName: "DoomsProd Music Store",
+      description: "Security-hardened full-stack e-commerce platform for selling beats, loop kits, and drum kits. Built with defense-in-depth architecture, OWASP best practices, JWT auth, and PCI-compliant Stripe payments.",
+      filePath: "/Images/beatpage.jpg",
     },
   ];
 

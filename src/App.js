@@ -7,6 +7,7 @@ import ProductCard from "./components/ProductCard";
 import AboutMe from "./components/AboutMe";
 import Skills from "./components/Skills";
 import Resume from "./components/Resume";
+import Plugins from "./components/Plugins";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route exact path="/about" component={AboutMe} />
         <Route exact path="/skills" component={Skills} />
         <Route exact path="/resume" component={Resume} />
+        <Route exact path="/plugins" component={Plugins} />
       </Switch>
     </>
   );

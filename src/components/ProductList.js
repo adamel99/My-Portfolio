@@ -75,7 +75,7 @@ const ProductList = () => {
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
               <Typography sx={{ fontSize: "1rem", color: theme.palette.text.secondary, lineHeight: 1.85, maxWidth: 480 }}>
-                A collection of security work, full-stack builds, and audio engineering projects.
+                A collection of security work and full-stack builds.
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 2, py: 0.75, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "6px" }}>
                 <Box

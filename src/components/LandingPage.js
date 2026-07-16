@@ -729,6 +729,21 @@ const Certs = () => {
 
   const certs = [
     {
+      image: "/Images/njitcert.jpg",
+      color: theme.palette.accent.main,
+      icon: <VerifiedUser sx={{ fontSize: 13 }} />,
+      tag: "CERTIFIED",
+      title: "NJIT Cybersecurity Certificate",
+      subtitle: "Applied cybersecurity coursework & training",
+      desc: "Completed a rigorous cybersecurity certificate program covering network defense, secure systems design, and applied security fundamentals through New Jersey Institute of Technology.",
+      chips: ["Network Defense", "Secure Systems", "Applied Security", "Fundamentals"],
+      highlights: [
+        "University-backed cybersecurity coursework",
+        "Applied labs across network and systems security",
+        "Foundation for advanced security certifications",
+      ],
+    },
+    {
       image: "/Images/Untitled.jpg",
       color: theme.palette.tertiary.main,
       icon: <VerifiedUser sx={{ fontSize: 13 }} />,
@@ -814,7 +829,7 @@ const Certs = () => {
         {/* Cards */}
         <Grid container spacing={3}>
           {certs.map((cert, i) => (
-            <Grid item xs={12} md={6} key={i}>
+            <Grid item xs={12} md={4} key={i}>
               <motion.div
                 initial={{ opacity: 0, y: 36 }}
                 whileInView={{ opacity: 1, y: 0 }}

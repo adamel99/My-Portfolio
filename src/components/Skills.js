@@ -269,6 +269,26 @@ const projectData = [
     tech: ["Encryption", "Firewalls", "IDS/IPS", "VPN", "PKI", "Compliance"],
   },
   {
+    title: "SOC Log Analyzer",
+    subtitle: "Cross-platform Python threat detection tool",
+    image: "/Images/eventlogger.jpg",  // ← add your screenshot here
+    color: "#00BBF9",
+    desc: "A Python-based log analysis tool that ingests Linux auth logs and Windows Event Log exports, automatically detects threats, correlates brute force attacks, and maps every finding to MITRE ATT&CK technique IDs.",
+    highlights: [
+      "Brute force correlation engine fires a single alert from 5+ failed logins within 60 seconds, replicating core SIEM logic used in Splunk",
+      "Auto-detects Linux syslog vs Windows CSV format with zero configuration needed",
+      "15+ detection rules covering privilege escalation, RDP logins, new account creation, and audit log tampering",
+      "Exports severity-ranked triage reports to CSV and JSON for downstream analysis",
+    ],
+    skills: [
+      { label: "Threat Detection", value: 90 },
+      { label: "Log Analysis", value: 88 },
+      { label: "Python Scripting", value: 85 },
+      { label: "MITRE ATT&CK", value: 87 },
+    ],
+    tech: ["Python", "MITRE ATT&CK", "Windows Event Logs", "Linux Auth Logs", "Regex", "CSV", "JSON"],
+  },
+  {
     title: "TDX Arena IR Expert",
     subtitle: "Hands-on incident response simulations",
     image: "/Images/cert.jpg",
@@ -286,24 +306,6 @@ const projectData = [
       { label: "Linux Security", value: 80 },
     ],
     tech: ["Windows", "Linux", "ClamAV", "Snort", "Wireshark", "tcpdump", "Forensics"],
-  },
-  {
-    title: "DoomsProd Music Store",
-    subtitle: "Secure full-stack e-commerce platform",
-    color: "#7B61FF",
-    desc: "Security-hardened marketplace for beats and audio kits, built with defense-in-depth architecture and OWASP best practices throughout the stack.",
-    highlights: [
-      "JWT authentication with rate limiting and input sanitization",
-      "PCI-compliant Stripe integration with CSRF protection",
-      "PostgreSQL with parameterized queries and RBAC",
-    ],
-    skills: [
-      { label: "React / Redux", value: 85 },
-      { label: "Node.js / Express", value: 75 },
-      { label: "PostgreSQL", value: 70 },
-      { label: "Secure API Design", value: 85 },
-    ],
-    tech: ["React", "Redux", "Node.js", "Express", "PostgreSQL", "Stripe", "JWT", "bcrypt"],
   },
 ];
 
