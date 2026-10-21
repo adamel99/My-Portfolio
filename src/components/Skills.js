@@ -1,250 +1,48 @@
-import React, { useRef, useState } from "react";
-import { Box, Typography, Container, Grid, Stack } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box, Container, Dialog, DialogContent, DialogTitle, IconButton, Stack, Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { Code, Database, Shield, Music, Terminal, Palette } from "lucide-react";
-
-// ─────────────────────────────────────────────
-// SHARED PRIMITIVES
-// ─────────────────────────────────────────────
-
-const NoiseOverlay = () => (
-  <Box sx={{
-    position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", opacity: 0.03,
-    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "256px 256px",
-  }} />
-);
-
-const GridBg = ({ opacity = 0.018 }) => (
-  <Box sx={{
-    position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
-    backgroundImage: `
-      linear-gradient(rgba(0,187,249,${opacity}) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,187,249,${opacity}) 1px, transparent 1px)
-    `,
-    backgroundSize: "72px 72px",
-  }} />
-);
-
-const Orb = ({ size, top, left, right, bottom, color, delay = 0, opacity = 1 }) => (
-  <motion.div
-    animate={{ scale: [1, 1.12, 1], opacity: [opacity * 0.65, opacity, opacity * 0.65] }}
-    transition={{ duration: 18, repeat: Infinity, delay, ease: "easeInOut" }}
-    style={{
-      position: "absolute", width: size, height: size,
-      top, left, right, bottom, borderRadius: "50%",
-      background: color, filter: "blur(130px)",
-      pointerEvents: "none", zIndex: 0,
-    }}
-  />
-);
-
-// ─────────────────────────────────────────────
-// SPOTLIGHT CARD
-// ─────────────────────────────────────────────
-
-const SpotlightCard = ({ children, color = "#00BBF9", sx = {}, onClick }) => {
-  const cardRef = useRef(null);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [hovered, setHovered] = useState(false);
-
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setMouse({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  return (
-    <Box
-      ref={cardRef}
-      onClick={onClick}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      sx={{
-        position: "relative",
-        borderRadius: "18px",
-        border: "1px solid rgba(255,255,255,0.055)",
-        background: "linear-gradient(160deg, rgba(255,255,255,0.022) 0%, rgba(255,255,255,0.008) 100%)",
-        overflow: "hidden",
-        cursor: onClick ? "pointer" : "default",
-        transition: "border-color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease",
-        "&:hover": {
-          border: `1px solid ${color}25`,
-          transform: "translateY(-4px)",
-          boxShadow: `0 28px 72px rgba(0,0,0,0.55), 0 0 0 1px ${color}12`,
-        },
-        ...sx,
-      }}
-    >
-      <motion.div
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.22 }}
-        style={{
-          position: "absolute", pointerEvents: "none", zIndex: 0,
-          width: 320, height: 320, borderRadius: "50%",
-          background: `radial-gradient(circle, ${color}10 0%, transparent 70%)`,
-          left: mouse.x - 160, top: mouse.y - 160,
-        }}
-      />
-      <motion.div
-        animate={{ opacity: hovered ? 1 : 0 }}
-        style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: "1px",
-          background: `linear-gradient(90deg, transparent, ${color}55, transparent)`,
-          zIndex: 2,
-        }}
-      />
-      <Box sx={{ position: "relative", zIndex: 1 }}>{children}</Box>
-    </Box>
-  );
-};
-
-// ─────────────────────────────────────────────
-// ANIMATED SKILL BAR
-// ─────────────────────────────────────────────
-
-const SkillBar = ({ skill, level, color }) => {
-  const theme = useTheme();
-  return (
-    <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.85 }}>
-        <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: theme.palette.text.secondary, fontFamily: "monospace", letterSpacing: "0.02em" }}>
-          {skill}
-        </Typography>
-        <Typography sx={{ fontSize: "0.7rem", color: color, fontWeight: 700, fontFamily: "monospace" }}>
-          {level}%
-        </Typography>
-      </Box>
-      <Box sx={{ height: 4, background: "rgba(255,255,255,0.04)", borderRadius: "4px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.04)" }}>
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${level}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
-          style={{
-            height: "100%",
-            background: `linear-gradient(90deg, ${color}70, ${color})`,
-            borderRadius: "4px",
-            boxShadow: `0 0 8px ${color}50`,
-          }}
-        />
-      </Box>
-    </Box>
-  );
-};
-
-// ─────────────────────────────────────────────
-// SECTION HEADER
-// ─────────────────────────────────────────────
-
-const SectionHeader = ({ eyebrow, title, color }) => {
-  const theme = useTheme();
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.55 }}
-    >
-      <Box sx={{ mb: 10 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-          <Box sx={{ width: 18, height: 1, background: color, opacity: 0.6 }} />
-          <Typography sx={{ fontFamily: "monospace", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.2em", color }}>
-            {eyebrow}
-          </Typography>
-        </Box>
-        <Typography sx={{ fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.02, fontSize: { xs: "2.4rem", md: "3.4rem" } }}>
-          {title}
-        </Typography>
-      </Box>
-    </motion.div>
-  );
-};
-
-// ─────────────────────────────────────────────
-// DATA
-// ─────────────────────────────────────────────
+import { Close, ZoomIn } from "@mui/icons-material";
 
 const skillCategories = [
   {
-    name: "Cybersecurity",
-    icon: <Shield size={16} />,
-    color: "#00BBF9",
-    desc: "Defensive security spanning incident response, threat analysis, and network hardening — with hands-on experience across Windows and Linux environments.",
+    name: "Cybersecurity", icon: <Shield size={17} />, color: "tertiary",
+    desc: "Defensive security across incident response, threat analysis, network security, and Windows and Linux environments.",
     skills: ["Incident Response", "Windows Security", "Linux Security", "Threat Analysis", "Network Security", "Vulnerability Assessment", "Security Auditing", "SIEM"],
-    proficiency: [
-      { label: "Incident Response", value: 95 },
-      { label: "Threat Analysis", value: 90 },
-      { label: "Network Security", value: 87 },
-      { label: "Vulnerability Assessment", value: 82 },
-    ],
+    proficiency: [["Incident Response", 95], ["Threat Analysis", 90], ["Network Security", 87], ["Vulnerability Assessment", 82]],
   },
   {
-    name: "Frontend",
-    icon: <Code size={16} />,
-    color: "#FDCFF3",
-    desc: "Component-driven UIs with React and Redux, built with security baked in — XSS prevention, secure auth flows, and OWASP best practices throughout.",
-    skills: ["React", "Redux", "Material-UI", "CSS3", "Framer Motion", "JavaScript ES6+", "XSS Prevention", "Secure Auth"],
-    proficiency: [
-      { label: "React / Redux", value: 85 },
-      { label: "JavaScript ES6+", value: 88 },
-      { label: "CSS3 / Material-UI", value: 82 },
-      { label: "Secure Auth", value: 85 },
-    ],
+    name: "Frontend", icon: <Code size={17} />, color: "secondary",
+    desc: "Component-driven interfaces built with React, with secure authentication flows, XSS prevention, and OWASP practices in mind.",
+    skills: ["React", "Redux", "Material UI", "CSS3", "Framer Motion", "JavaScript ES6+", "XSS Prevention", "Secure Auth"],
+    proficiency: [["React / Redux", 85], ["JavaScript ES6+", 88], ["CSS / Material UI", 82], ["Secure Auth", 85]],
   },
   {
-    name: "Backend",
-    icon: <Database size={16} />,
-    color: "#DC136C",
-    desc: "Node.js/Express APIs with PostgreSQL — rate limiting, parameterized queries, RBAC, and JWT authentication designed from the ground up for security.",
+    name: "Backend", icon: <Database size={17} />, color: "primary",
+    desc: "Node.js and Express APIs with relational databases, authentication, rate limiting, and secure API design.",
     skills: ["Node.js", "Express.js", "PostgreSQL", "MySQL", "REST APIs", "JWT Auth", "Rate Limiting", "API Security"],
-    proficiency: [
-      { label: "Node.js / Express", value: 75 },
-      { label: "PostgreSQL", value: 70 },
-      { label: "JWT Auth", value: 82 },
-      { label: "Secure API Design", value: 85 },
-    ],
+    proficiency: [["Node.js / Express", 75], ["PostgreSQL", 70], ["JWT Auth", 82], ["Secure API Design", 85]],
   },
   {
-    name: "Audio Engineering",
-    icon: <Music size={16} />,
-    color: "#7B61FF",
-    desc: "C++ plugin development with JUCE — DSP pipelines, FFT analysis, and audio production tooling bridging engineering and creative disciplines.",
+    name: "Audio Engineering", icon: <Music size={17} />, color: "accent",
+    desc: "C++ and JUCE plugin development, DSP pipelines, FFT analysis, and audio production tooling.",
     skills: ["JUCE Framework", "C++", "DSP", "FFT Analysis", "Plugin Development", "Audio Production", "Mixing & Mastering"],
-    proficiency: [
-      { label: "C++ / JUCE", value: 78 },
-      { label: "DSP / FFT", value: 74 },
-      { label: "Plugin Development", value: 70 },
-      { label: "Audio Production", value: 88 },
-    ],
+    proficiency: [["C++ / JUCE", 78], ["DSP / FFT", 74], ["Plugin Development", 70], ["Audio Production", 88]],
   },
   {
-    name: "Tools & DevOps",
-    icon: <Terminal size={16} />,
-    color: "#00BBF9",
-    desc: "CLI-first workflow — Git, AWS, CI/CD pipelines, and environment security. Comfortable across terminal, VS Code, and cloud infrastructure.",
-    skills: ["Git", "VS Code", "Terminal / CLI", "AWS", "CI/CD", "Package Managers", "Env Security"],
-    proficiency: [
-      { label: "Git / Version Control", value: 88 },
-      { label: "Terminal / CLI", value: 85 },
-      { label: "AWS", value: 68 },
-      { label: "CI/CD", value: 72 },
-    ],
+    name: "Tools & DevOps", icon: <Terminal size={17} />, color: "tertiary",
+    desc: "A CLI-first workflow across version control, cloud services, CI/CD pipelines, and environment security.",
+    skills: ["Git", "VS Code", "Terminal / CLI", "AWS", "CI/CD", "Package Managers", "Environment Security"],
+    proficiency: [["Git / Version Control", 88], ["Terminal / CLI", 85], ["AWS", 68], ["CI/CD", 72]],
   },
   {
-    name: "Design",
-    icon: <Palette size={16} />,
-    color: "#DC136C",
-    desc: "UI/UX from concept to component — visual design, prototyping, and component architecture that balances aesthetics with usability.",
+    name: "Design", icon: <Palette size={17} />, color: "primary",
+    desc: "UI/UX from concept to component, balancing visual design, prototyping, and usability.",
     skills: ["UI Design", "Component Architecture", "Visual Design", "User Experience", "Prototyping"],
-    proficiency: [
-      { label: "UI Design", value: 82 },
-      { label: "Component Architecture", value: 80 },
-      { label: "User Experience", value: 75 },
-      { label: "Prototyping", value: 70 },
-    ],
+    proficiency: [["UI Design", 82], ["Component Architecture", 80], ["User Experience", 75], ["Prototyping", 70]],
   },
 ];
 
@@ -253,467 +51,266 @@ const projectData = [
     title: "CompTIA Security+",
     subtitle: "Industry-recognized cybersecurity certification",
     image: "/Images/Untitled.jpg",
-    color: "#00BBF9",
-    desc: "Validates comprehensive cybersecurity knowledge across threat management, cryptography, identity management, and network security.",
-    highlights: [
-      "Comprehensive coverage of all 5 exam domains",
-      "DoD-approved baseline certification (8570/8140)",
-      "Validates both technical and operational security skills",
-    ],
-    skills: [
-      { label: "Network Security", value: 90 },
-      { label: "Threat Management", value: 85 },
-      { label: "Risk Assessment", value: 88 },
-      { label: "Security Protocols", value: 87 },
-    ],
+    color: "tertiary",
+    desc: "Validates cybersecurity knowledge across threat management, cryptography, identity management, and network security.",
+    highlights: ["Coverage across all five exam domains", "DoD-approved baseline certification (8570/8140)", "Technical and operational security skills"],
     tech: ["Encryption", "Firewalls", "IDS/IPS", "VPN", "PKI", "Compliance"],
   },
   {
     title: "SOC Log Analyzer",
     subtitle: "Cross-platform Python threat detection tool",
-    image: "/Images/eventlogger.jpg",  // ← add your screenshot here
-    color: "#00BBF9",
-    desc: "A Python-based log analysis tool that ingests Linux auth logs and Windows Event Log exports, automatically detects threats, correlates brute force attacks, and maps every finding to MITRE ATT&CK technique IDs.",
-    highlights: [
-      "Brute force correlation engine fires a single alert from 5+ failed logins within 60 seconds, replicating core SIEM logic used in Splunk",
-      "Auto-detects Linux syslog vs Windows CSV format with zero configuration needed",
-      "15+ detection rules covering privilege escalation, RDP logins, new account creation, and audit log tampering",
-      "Exports severity-ranked triage reports to CSV and JSON for downstream analysis",
-    ],
-    skills: [
-      { label: "Threat Detection", value: 90 },
-      { label: "Log Analysis", value: 88 },
-      { label: "Python Scripting", value: 85 },
-      { label: "MITRE ATT&CK", value: 87 },
-    ],
-    tech: ["Python", "MITRE ATT&CK", "Windows Event Logs", "Linux Auth Logs", "Regex", "CSV", "JSON"],
+    image: "/Images/eventlogger.jpg",
+    color: "tertiary",
+    desc: "A Python-based log analyzer for Linux authentication logs and Windows Event Log exports, with threat detection, brute-force correlation, and MITRE ATT&CK mapping.",
+    highlights: ["Sliding-window brute-force correlation", "Detection rules for privilege escalation, RDP logins, account creation, and audit-log tampering", "Severity-ranked CSV and JSON triage reports"],
+    tech: ["Python", "MITRE ATT&CK", "Windows Event Logs", "Linux Auth Logs", "Regex", "CSV / JSON"],
   },
   {
     title: "TDX Arena IR Expert",
     subtitle: "Hands-on incident response simulations",
     image: "/Images/cert.jpg",
-    color: "#DC136C",
-    desc: "Advanced cybersecurity training through real-world IR scenarios — memory forensics, malware triage, PCAP analysis, and threat detection.",
-    highlights: [
-      "Memory forensics on compromised Windows systems",
-      "Malware triage using ClamAV and static analysis tools",
-      "End-to-end threat detection with Wireshark and Snort",
-    ],
-    skills: [
-      { label: "Incident Response", value: 95 },
-      { label: "Threat Analysis", value: 90 },
-      { label: "Windows Security", value: 85 },
-      { label: "Linux Security", value: 80 },
-    ],
+    color: "primary",
+    desc: "Incident-response training through scenarios involving memory forensics, malware triage, PCAP analysis, and threat detection.",
+    highlights: ["Memory forensics on compromised Windows systems", "Malware triage with ClamAV and static-analysis tools", "Threat detection with Wireshark and Snort"],
     tech: ["Windows", "Linux", "ClamAV", "Snort", "Wireshark", "tcpdump", "Forensics"],
   },
 ];
 
-// ══════════════════════════════════════════════
-// SKILLS PAGE
-// ══════════════════════════════════════════════
+const Section = ({ title, children }) => {
+  const theme = useTheme();
+  return (
+    <Box component="section" sx={{ mb: { xs: 4, md: 5 } }}>
+      <Stack direction="row" alignItems="center" spacing={1.35} sx={{ mb: 2 }}>
+        <Typography component="h2" sx={{ color: theme.palette.text.primary, fontSize: "1.2rem", fontWeight: 750, letterSpacing: "-0.02em" }}>
+          {title}
+        </Typography>
+        <Box sx={{ height: "1px", flex: 1, background: `linear-gradient(90deg, ${theme.palette.divider}, transparent)` }} />
+      </Stack>
+      {children}
+    </Box>
+  );
+};
+
+const SkillBar = ({ label, value, color }) => {
+  const theme = useTheme();
+  return (
+    <Box>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.65 }}>
+        <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.86rem", fontWeight: 600 }}>{label}</Typography>
+        <Typography sx={{ color, fontFamily: theme.typography.mono, fontSize: "0.76rem", fontWeight: 700 }}>{value}%</Typography>
+      </Stack>
+      <Box sx={{ height: 5, overflow: "hidden", borderRadius: 99, bgcolor: "rgba(255,255,255,0.07)" }}>
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${value}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          style={{ height: "100%", borderRadius: 99, background: `linear-gradient(90deg, ${color}80, ${color})` }}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+const ProjectShowcase = ({ project }) => {
+  const theme = useTheme();
+  const [imageOpen, setImageOpen] = useState(false);
+  const color = theme.palette[project.color].main;
+
+  return (
+    <Box
+      component="article"
+      sx={{
+        overflow: "hidden",
+        borderRadius: 2.5,
+        border: `1px solid ${theme.palette.divider}`,
+        background: `linear-gradient(145deg, ${theme.palette.background.paper}, ${theme.palette.background.elevated})`,
+        transition: "border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease",
+        "&:hover": { borderColor: `${color}50`, transform: "translateY(-3px)", boxShadow: "0 18px 44px rgba(0,0,0,0.28)" },
+      }}
+    >
+      <Box sx={{ position: "relative", p: { xs: 1.5, sm: 2 }, pb: 0 }}>
+        <Box
+          component="button"
+          type="button"
+          onClick={() => setImageOpen(true)}
+          aria-label={`Enlarge image for ${project.title}`}
+          sx={{
+            position: "relative", display: "block", width: "100%", aspectRatio: "16 / 10", overflow: "hidden",
+            border: `1px solid ${theme.palette.divider}`, borderRadius: 1.5, p: 0,
+            backgroundColor: theme.palette.background.terminal, cursor: "zoom-in",
+            "&:hover .zoom-overlay": { opacity: 1 },
+            "&:focus-visible": { outline: `2px solid ${color}`, outlineOffset: 3 },
+          }}
+        >
+          <Box component="img" src={project.image} alt={project.title} sx={{ display: "block", width: "100%", height: "100%", objectFit: "contain", p: 1.2, transition: "transform 0.35s ease", "button:hover &": { transform: "scale(1.035)" } }} />
+          <Box className="zoom-overlay" sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "flex-end", justifyContent: "flex-end", p: 1.1, background: "linear-gradient(transparent 55%, rgba(0,0,0,0.55))", opacity: { xs: 1, sm: 0 }, transition: "opacity 0.2s ease", pointerEvents: "none" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.55, px: 1, py: 0.55, borderRadius: 1, color: "#fff", bgcolor: "rgba(8,8,11,0.72)", fontSize: "0.72rem" }}>
+              <ZoomIn sx={{ fontSize: 16 }} /> Click to enlarge
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box sx={{ p: { xs: 2, sm: 2.5 } }}>
+        <Typography sx={{ color, fontFamily: theme.typography.mono, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", mb: 0.7 }}>
+          Featured Work
+        </Typography>
+        <Typography component="h3" sx={{ color: theme.palette.text.primary, fontSize: "1.14rem", fontWeight: 750, letterSpacing: "-0.02em" }}>
+          {project.title}
+        </Typography>
+        <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.82rem", mt: 0.35 }}>{project.subtitle}</Typography>
+        <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.9rem", lineHeight: 1.7, mt: 1.1 }}>{project.desc}</Typography>
+
+        <Box sx={{ mt: 1.7 }}>
+          <Typography sx={{ color: theme.palette.text.primary, fontSize: "0.82rem", fontWeight: 700, mb: 0.7 }}>Highlights</Typography>
+          <Stack spacing={0.65}>
+            {project.highlights.map((highlight) => (
+              <Stack key={highlight} direction="row" alignItems="flex-start" spacing={1}>
+                <Box sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: color, mt: "8px", flexShrink: 0 }} />
+                <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.85rem", lineHeight: 1.6 }}>{highlight}</Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
+
+        <Stack direction="row" useFlexGap flexWrap="wrap" gap={0.7} sx={{ mt: 1.8, pt: 1.4, borderTop: `1px solid ${theme.palette.divider}` }}>
+          {project.tech.map((technology) => (
+            <Box key={technology} sx={{ px: 1, py: 0.45, color, bgcolor: `${color}0D`, border: `1px solid ${color}22`, borderRadius: 1, fontFamily: theme.typography.mono, fontSize: "0.67rem" }}>
+              {technology}
+            </Box>
+          ))}
+        </Stack>
+      </Box>
+
+      <Dialog
+        open={imageOpen}
+        onClose={() => setImageOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        aria-labelledby={`skills-project-image-${project.title.replace(/\s+/g, "-")}`}
+        PaperProps={{ sx: { bgcolor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: 2 } }}
+      >
+        <DialogTitle id={`skills-project-image-${project.title.replace(/\s+/g, "-")}`} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: theme.palette.text.primary, pr: 1.5 }}>
+          <Typography component="span" sx={{ fontSize: "1rem", fontWeight: 700 }}>{project.title}</Typography>
+          <IconButton onClick={() => setImageOpen(false)} aria-label="Close enlarged image" sx={{ color: theme.palette.text.secondary }}><Close /></IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: { xs: 1.5, sm: 3 }, borderColor: theme.palette.divider }}>
+          <Box component="img" src={project.image} alt={project.title} sx={{ display: "block", maxWidth: "100%", maxHeight: "75vh", objectFit: "contain" }} />
+        </DialogContent>
+      </Dialog>
+    </Box>
+  );
+};
 
 const Skills = () => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState(skillCategories[0].name);
-
-  const activeCategory = skillCategories.find((c) => c.name === activeTab);
+  const activeCategory = skillCategories.find((category) => category.name === activeTab) || skillCategories[0];
+  const categoryColor = theme.palette[activeCategory.color].main;
 
   return (
-    <Box sx={{ minHeight: "100vh", background: theme.palette.background.default, overflowX: "hidden" }}>
-
-      {/* ── HERO ── */}
-      <Box sx={{ position: "relative", pt: { xs: 14, md: 22 }, pb: { xs: 12, md: 18 }, overflow: "hidden" }}>
-        <GridBg />
-        <NoiseOverlay />
-        <Orb size={800} top="-22%" left="-18%"
-          color={`radial-gradient(circle, ${theme.palette.tertiary.main}45, ${theme.palette.accent.main}22, transparent 68%)`}
-          delay={0} opacity={0.85}
-        />
-        <Orb size={550} bottom="-12%" right="-12%"
-          color={`radial-gradient(circle, ${theme.palette.primary.main}38, transparent 68%)`}
-          delay={6} opacity={0.8}
-        />
-
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
-          <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}>
-
-            {/* Eyebrow */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 5 }}>
-              <Box sx={{ width: 18, height: 1, background: theme.palette.tertiary.main, opacity: 0.6 }} />
-              <Typography sx={{ fontFamily: "monospace", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.2em", color: theme.palette.tertiary.main }}>
-                TECHNICAL ARSENAL
-              </Typography>
-            </Box>
-
-            {/* Headline */}
-            <Box sx={{ mb: 5 }}>
-              <Typography sx={{
-                fontWeight: 900, lineHeight: 0.93, letterSpacing: "-0.048em",
-                fontSize: { xs: "4rem", sm: "5.5rem", md: "7.5rem" },
-                color: theme.palette.text.primary,
-              }}>
-                technical
-              </Typography>
-              <Typography sx={{
-                fontWeight: 900, lineHeight: 0.93, letterSpacing: "-0.048em",
-                fontSize: { xs: "4rem", sm: "5.5rem", md: "7.5rem" },
-                background: `linear-gradient(110deg, ${theme.palette.tertiary.main} 0%, ${theme.palette.accent.main} 50%, ${theme.palette.primary.main} 100%)`,
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 4s ease infinite",
-                "@keyframes shimmer": {
-                  "0%": { backgroundPosition: "0% 50%" },
-                  "50%": { backgroundPosition: "100% 50%" },
-                  "100%": { backgroundPosition: "0% 50%" },
-                },
-              }}>
-                expertise
-              </Typography>
-            </Box>
-
-            <Typography sx={{
-              fontSize: { xs: "0.95rem", md: "1.05rem" },
-              color: theme.palette.text.secondary,
-              maxWidth: 500, lineHeight: 1.9, letterSpacing: "0.005em",
-            }}>
-              Multi-domain skill set spanning cybersecurity, full-stack development,
-              and audio engineering — with a security-first approach throughout.
-            </Typography>
-          </motion.div>
-        </Container>
-      </Box>
-
-      {/* ── SKILL CATEGORIES (TABBED) ── */}
-      <Box sx={{ py: { xs: 12, md: 16 }, position: "relative" }}>
-        <GridBg />
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-
-          <SectionHeader eyebrow="CORE COMPETENCIES" title="Skills Overview" color={theme.palette.primary.main} />
-
-          {/* Tab bar */}
-          <Box sx={{ display: "flex", gap: "6px", flexWrap: "wrap", mb: 4 }}>
-            {skillCategories.map((cat) => (
-              <Box
-                key={cat.name}
-                onClick={() => setActiveTab(cat.name)}
-                sx={{
-                  display: "flex", alignItems: "center", gap: "8px",
-                  px: 1.75, py: 1,
-                  borderRadius: "8px",
-                  border: activeTab === cat.name
-                    ? "1px solid rgba(255,255,255,0.18)"
-                    : "1px solid rgba(255,255,255,0.055)",
-                  background: activeTab === cat.name
-                    ? "rgba(255,255,255,0.055)"
-                    : "transparent",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                  color: activeTab === cat.name
-                    ? theme.palette.text.primary
-                    : theme.palette.text.secondary,
-                  fontSize: "0.82rem",
-                  fontWeight: activeTab === cat.name ? 600 : 400,
-                  userSelect: "none",
-                  "&:hover": {
-                    background: "rgba(255,255,255,0.035)",
-                    color: theme.palette.text.primary,
-                    borderColor: "rgba(255,255,255,0.1)",
-                  },
-                }}
-              >
-                <Box sx={{
-                  display: "flex",
-                  color: activeTab === cat.name ? cat.color : "inherit",
-                  transition: "color 0.15s ease",
-                }}>
-                  {cat.icon}
-                </Box>
-                {cat.name}
+    <Box sx={{ minHeight: "100vh", backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, py: { xs: 2.5, md: 6 } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: 1.5, sm: 3 } }}>
+        <Box component="main" sx={{ maxWidth: 1120, mx: "auto" }}>
+          <Box
+            component="header"
+            sx={{
+              position: "relative", overflow: "hidden", p: { xs: 2.5, sm: 4, md: 5 }, mb: { xs: 4, md: 6 },
+              borderRadius: 3, border: `1px solid ${theme.palette.divider}`,
+              background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.elevated} 100%)`,
+              "&::after": { content: '""', position: "absolute", width: 320, height: 320, right: -110, top: -155, borderRadius: "50%", background: `radial-gradient(circle, ${theme.palette.tertiary.main}22 0%, transparent 72%)`, pointerEvents: "none" },
+            }}
+          >
+            <Box sx={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) 260px" }, gap: { xs: 3, md: 5 }, alignItems: "end" }}>
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.2 }}>
+                  <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: theme.palette.tertiary.main, boxShadow: `0 0 12px ${theme.palette.tertiary.main}88` }} />
+                  <Typography sx={{ color: theme.palette.text.secondary, fontFamily: theme.typography.mono, fontSize: "0.69rem", letterSpacing: "0.14em", textTransform: "uppercase" }}>Career Profile · Skills</Typography>
+                </Stack>
+                <Typography component="h1" sx={{ fontSize: { xs: "2.65rem", sm: "3.7rem", md: "4.45rem" }, fontWeight: 800, letterSpacing: "-0.06em", lineHeight: 0.98 }}>
+                  Technical <Box component="span" sx={{ color: theme.palette.tertiary.main }}>Skills</Box>
+                </Typography>
+                <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.96rem", md: "1.04rem" }, lineHeight: 1.75, maxWidth: 610, mt: 2 }}>
+                  A multi-domain skill set spanning cybersecurity, full-stack development, and audio engineering, with a security-first approach throughout.
+                </Typography>
               </Box>
-            ))}
+              <Box sx={{ p: 2.2, borderRadius: 2, backgroundColor: `${theme.palette.tertiary.main}0A`, border: `1px solid ${theme.palette.tertiary.main}28` }}>
+                <Typography sx={{ color: theme.palette.tertiary.main, fontFamily: theme.typography.mono, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.12em", mb: 0.8 }}>AREAS OF PRACTICE</Typography>
+                <Typography sx={{ color: theme.palette.text.primary, fontSize: "0.96rem", fontWeight: 700, lineHeight: 1.5 }}>Security · Software · Audio</Typography>
+                <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.82rem", mt: 0.7 }}>{skillCategories.length} skill domains</Typography>
+              </Box>
+            </Box>
           </Box>
 
-          {/* Active panel */}
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <SpotlightCard color={activeCategory.color}>
-              <Grid container>
-
-                {/* Left: description + chips */}
-                <Grid item xs={12} md={6}>
-                  <Box sx={{
-                    p: { xs: 3.5, md: 5 },
-                    display: "flex", flexDirection: "column", gap: 3,
-                    borderRight: { md: "1px solid rgba(255,255,255,0.045)" },
-                    borderBottom: { xs: "1px solid rgba(255,255,255,0.045)", md: "none" },
-                    height: "100%",
-                  }}>
-                    {/* Title + desc */}
-                    <Box>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                        <Box sx={{
-                          p: 1.1, display: "flex",
-                          background: `${activeCategory.color}0D`,
-                          border: `1px solid ${activeCategory.color}1A`,
-                          borderRadius: "9px",
-                          color: activeCategory.color,
-                        }}>
-                          {activeCategory.icon}
-                        </Box>
-                        <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", letterSpacing: "-0.02em", color: theme.palette.text.primary }}>
-                          {activeCategory.name}
-                        </Typography>
-                      </Box>
-                      <Typography sx={{ fontSize: "0.88rem", color: theme.palette.text.secondary, lineHeight: 1.9 }}>
-                        {activeCategory.desc}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ height: "1px", background: "rgba(255,255,255,0.045)" }} />
-
-                    {/* Skill chips */}
-                    <Box>
-                      <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 1.75, textTransform: "uppercase" }}>
-                        Technologies
-                      </Typography>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                        {activeCategory.skills.map((skill, j) => (
-                          <motion.div
-                            key={skill}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: j * 0.03, duration: 0.2 }}
-                          >
-                            <Box sx={{
-                              px: 1.35, py: 0.55,
-                              fontSize: "0.68rem", fontFamily: "monospace", letterSpacing: "0.025em",
-                              color: "rgba(255,255,255,0.7)",
-                              background: "rgba(255,255,255,0.03)",
-                              border: "1px solid rgba(255,255,255,0.065)",
-                              borderRadius: "999px",
-                              cursor: "default",
-                              transition: "all 0.15s ease",
-                              "&:hover": {
-                                color: activeCategory.color,
-                                background: `${activeCategory.color}0C`,
-                                border: `1px solid ${activeCategory.color}30`,
-                              },
-                            }}>
-                              {skill}
-                            </Box>
-                          </motion.div>
-                        ))}
-                      </Box>
-                    </Box>
+          <Section title="Skills Overview">
+            <Box role="tablist" aria-label="Skill categories" sx={{ display: "flex", gap: 0.8, flexWrap: "wrap", mb: 2.2 }}>
+              {skillCategories.map((category) => {
+                const color = theme.palette[category.color].main;
+                const selected = activeTab === category.name;
+                return (
+                  <Box
+                    component="button"
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    key={category.name}
+                    onClick={() => setActiveTab(category.name)}
+                    sx={{
+                      display: "flex", alignItems: "center", gap: 0.9, px: 1.35, py: 0.85,
+                      borderRadius: 1.4, border: `1px solid ${selected ? `${color}55` : theme.palette.divider}`,
+                      backgroundColor: selected ? `${color}12` : "transparent",
+                      color: selected ? theme.palette.text.primary : theme.palette.text.secondary,
+                      cursor: "pointer", fontFamily: theme.typography.fontFamily, fontSize: "0.85rem", fontWeight: selected ? 650 : 500,
+                      transition: "all 0.18s ease", "&:hover": { borderColor: `${color}50`, backgroundColor: `${color}0D` },
+                      "&:focus-visible": { outline: `2px solid ${color}`, outlineOffset: 2 },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", color: selected ? color : "inherit" }}>{category.icon}</Box>
+                    {category.name}
                   </Box>
-                </Grid>
+                );
+              })}
+            </Box>
 
-                {/* Right: proficiency bars */}
-                <Grid item xs={12} md={6}>
-                  <Box sx={{ p: { xs: 3.5, md: 5 }, display: "flex", flexDirection: "column", gap: 3 }}>
-                    <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", textTransform: "uppercase" }}>
-                      Proficiency
-                    </Typography>
-                    <Stack spacing={2.5}>
-                      {activeCategory.proficiency.map((s, j) => (
-                        <motion.div
-                          key={s.label}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: j * 0.07, duration: 0.3 }}
-                        >
-                          <SkillBar skill={s.label} level={s.value} color={activeCategory.color} />
-                        </motion.div>
-                      ))}
-                    </Stack>
-                  </Box>
-                </Grid>
+            <motion.div key={activeCategory.name} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1.1fr) minmax(300px, 0.9fr)" }, borderRadius: 2.5, overflow: "hidden", border: `1px solid ${theme.palette.divider}`, background: `linear-gradient(145deg, ${theme.palette.background.paper}, ${theme.palette.background.elevated})` }}>
+                <Box sx={{ p: { xs: 2.2, sm: 3, md: 3.5 }, borderRight: { md: `1px solid ${theme.palette.divider}` }, borderBottom: { xs: `1px solid ${theme.palette.divider}`, md: 0 } }}>
+                  <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 1.3 }}>
+                    <Box sx={{ display: "flex", p: 1, color: categoryColor, bgcolor: `${categoryColor}12`, border: `1px solid ${categoryColor}30`, borderRadius: 1.3 }}>{activeCategory.icon}</Box>
+                    <Typography component="h3" sx={{ color: theme.palette.text.primary, fontSize: "1.25rem", fontWeight: 750 }}>{activeCategory.name}</Typography>
+                  </Stack>
+                  <Typography sx={{ color: theme.palette.text.secondary, fontSize: "0.94rem", lineHeight: 1.75 }}>{activeCategory.desc}</Typography>
+                  <Typography sx={{ color: theme.palette.text.primary, fontSize: "0.83rem", fontWeight: 700, mt: 2.5, mb: 1 }}>Skills & technologies</Typography>
+                  <Stack direction="row" useFlexGap flexWrap="wrap" gap={0.7}>
+                    {activeCategory.skills.map((skill) => (
+                      <Box key={skill} sx={{ px: 1, py: 0.5, color: theme.palette.text.secondary, bgcolor: "rgba(255,255,255,0.035)", border: `1px solid ${theme.palette.divider}`, borderRadius: 1, fontSize: "0.77rem" }}>{skill}</Box>
+                    ))}
+                  </Stack>
+                </Box>
+                <Box sx={{ p: { xs: 2.2, sm: 3, md: 3.5 } }}>
+                  <Typography sx={{ color: theme.palette.text.primary, fontSize: "0.83rem", fontWeight: 700, mb: 2 }}>Areas of experience</Typography>
+                  <Stack spacing={2}>
+                    {activeCategory.proficiency.map(([label, value]) => (
+                      <SkillBar key={label} label={label} value={value} color={categoryColor} />
+                    ))}
+                  </Stack>
+                </Box>
+              </Box>
+            </motion.div>
+          </Section>
 
-              </Grid>
-            </SpotlightCard>
-          </motion.div>
-
-        </Container>
-      </Box>
-
-      {/* ── PROJECTS / CERTS ── */}
-      <Box sx={{ py: { xs: 12, md: 18 }, position: "relative", overflow: "hidden" }}>
-        <GridBg />
-        <NoiseOverlay />
-        <Orb size={600} top="5%" right="-8%"
-          color={`radial-gradient(circle, ${theme.palette.accent.main}22, transparent 70%)`}
-          delay={4} opacity={0.8}
-        />
-        <Orb size={400} bottom="10%" left="-6%"
-          color={`radial-gradient(circle, ${theme.palette.primary.main}18, transparent 70%)`}
-          delay={9} opacity={0.6}
-        />
-
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-
-          <SectionHeader eyebrow="FEATURED PROJECTS" title="Technical Showcase" color={theme.palette.accent.main} />
-
-          <Stack spacing={4}>
-            {projectData.map((project, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 36 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <SpotlightCard color={project.color}>
-                  <Grid container>
-
-                    {/* Image column */}
-                    {project.image && (
-                      <Grid item xs={12} md={3}>
-                        <Box sx={{
-                          height: { xs: 180, md: "100%" }, maxHeight: { md: 350 },
-                          background: "rgba(0,0,0,0.45)",
-                          position: "relative", overflow: "hidden",
-                          borderRight: { md: "1px solid rgba(255,255,255,0.04)" },
-                          borderBottom: { xs: "1px solid rgba(255,255,255,0.04)", md: "none" },
-                          borderRadius: { xs: "16px 16px 0 0", md: "16px 0 0 16px" },
-                        }}>
-                          <Box
-                            component="img"
-                            src={project.image}
-                            alt={project.title}
-                            sx={{ width: "100%", height: "100%", objectFit: "contain", p: { xs: 3, md: 4 }, opacity: 0.9 }}
-                          />
-                          <Box sx={{ position: "absolute", inset: 0, background: `linear-gradient(145deg, ${project.color}08, transparent 60%)` }} />
-                          <Box sx={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "40%", background: "linear-gradient(transparent, rgba(8,8,14,0.6))", display: { xs: "block", md: "none" } }} />
-                        </Box>
-                      </Grid>
-                    )}
-
-                    {/* Content column */}
-                    <Grid item xs={12} md={project.image ? 9 : 12}>
-                      <Box sx={{ p: { xs: 3.5, md: 5 }, display: "flex", flexDirection: "column", gap: 3, height: "100%" }}>
-
-                        {/* Status tag */}
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Box sx={{
-                            display: "inline-flex", alignItems: "center", gap: 0.75,
-                            px: 1.4, py: 0.45,
-                            fontSize: "0.58rem", fontFamily: "monospace", letterSpacing: "0.12em",
-                            color: project.color,
-                            background: `${project.color}0C`,
-                            border: `1px solid ${project.color}20`,
-                            borderRadius: "5px",
-                          }}>
-                            <Box
-                              component={motion.div}
-                              animate={{ opacity: [1, 0.25, 1] }}
-                              transition={{ duration: 2.5, repeat: Infinity }}
-                              sx={{ width: 4, height: 4, borderRadius: "50%", background: project.color, boxShadow: `0 0 5px ${project.color}` }}
-                            />
-                            COMPLETE
-                          </Box>
-                        </Box>
-
-                        {/* Title block */}
-                        <Box>
-                          <Typography sx={{
-                            fontWeight: 900, letterSpacing: "-0.028em", lineHeight: 1.08, mb: 0.75,
-                            fontSize: { xs: "1.55rem", md: "2.1rem" },
-                            color: theme.palette.text.primary,
-                          }}>
-                            {project.title}
-                          </Typography>
-                          <Typography sx={{ fontSize: "0.7rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.05em" }}>
-                            {project.subtitle}
-                          </Typography>
-                        </Box>
-
-                        <Typography sx={{ fontSize: "0.88rem", color: theme.palette.text.secondary, lineHeight: 1.88, letterSpacing: "0.004em" }}>
-                          {project.desc}
-                        </Typography>
-
-                        {/* Highlights */}
-                        <Box>
-                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 1.75, textTransform: "uppercase" }}>
-                            Key Highlights
-                          </Typography>
-                          <Stack spacing={1.2}>
-                            {project.highlights.map((h, j) => (
-                              <motion.div
-                                key={j}
-                                initial={{ opacity: 0, x: -8 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.08 + j * 0.06 }}
-                              >
-                                <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.75 }}>
-                                  <Box sx={{
-                                    flexShrink: 0, mt: 0.7,
-                                    width: 4, height: 4, borderRadius: "50%",
-                                    background: project.color, opacity: 0.65,
-                                    boxShadow: `0 0 6px ${project.color}`,
-                                  }} />
-                                  <Typography sx={{ fontSize: "0.85rem", color: theme.palette.text.secondary, lineHeight: 1.75 }}>
-                                    {h}
-                                  </Typography>
-                                </Box>
-                              </motion.div>
-                            ))}
-                          </Stack>
-                        </Box>
-
-                        {/* Skill bars */}
-                        <Box>
-                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 2, textTransform: "uppercase" }}>
-                            Proficiency
-                          </Typography>
-                          <Grid container spacing={2.5}>
-                            {project.skills.map((s, j) => (
-                              <Grid item xs={12} sm={6} key={j}>
-                                <SkillBar skill={s.label} level={s.value} color={project.color} />
-                              </Grid>
-                            ))}
-                          </Grid>
-                        </Box>
-
-                        {/* Tech stack */}
-                        <Box sx={{ pt: 2.5, borderTop: "1px solid rgba(255,255,255,0.045)", mt: "auto" }}>
-                          <Typography sx={{ fontSize: "0.58rem", fontFamily: "monospace", color: theme.palette.text.disabled, letterSpacing: "0.18em", mb: 1.5, textTransform: "uppercase" }}>
-                            Tech Stack
-                          </Typography>
-                          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                            {project.tech.map((t) => (
-                              <Box
-                                key={t}
-                                sx={{
-                                  px: 1.4, py: 0.45,
-                                  fontSize: "0.62rem", fontFamily: "monospace", letterSpacing: "0.04em",
-                                  color: project.color, fontWeight: 700,
-                                  background: `${project.color}09`,
-                                  border: `1px solid ${project.color}18`,
-                                  borderRadius: "5px",
-                                  transition: "all 0.18s ease",
-                                  "&:hover": { background: `${project.color}18`, border: `1px solid ${project.color}30` },
-                                }}
-                              >
-                                {t}
-                              </Box>
-                            ))}
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </SpotlightCard>
-              </motion.div>
-            ))}
-          </Stack>
-        </Container>
-      </Box>
+          <Section title="Technical Showcase">
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: { xs: 2, md: 2.5 }, alignItems: "stretch" }}>
+              {projectData.map((project, index) => (
+                <motion.div key={project.title} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ delay: index * 0.07, duration: 0.4 }} style={{ height: "100%" }}>
+                  <ProjectShowcase project={project} />
+                </motion.div>
+              ))}
+            </Box>
+          </Section>
+        </Box>
+      </Container>
     </Box>
   );
 };

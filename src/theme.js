@@ -4,45 +4,45 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#08080B",
-      paper: "#0D0D12",
-      elevated: "#131319",
-      terminal: "#050507",
+      default: "#0D111A",
+      paper: "#0D111A",
+      elevated: "rgba(245,211,221,0.035)",
+      terminal: "#0D111A",
     },
     primary: {
-      main: "#DC136C",
-      light: "#F03D8A",
-      dark: "#9E0E4E",
-      contrastText: "#FFFFFF",
+      main: "#E42278",
+      light: "#ED7BAB",
+      dark: "#E42278",
+      contrastText: "#F9F9F9",
     },
     secondary: {
-      main: "#FDCFF3",
-      contrastText: "#000000",
+      main: "#F5D3DD",
+      contrastText: "#0D111A",
     },
     tertiary: {
-      main: "#00BBF9",
-      light: "#33CAFF",
-      dark: "#007DB5",
+      main: "#ED7BAB",
+      light: "#F5D3DD",
+      dark: "#E42278",
     },
     accent: {
-      main: "#7B61FF",
-      light: "#9D85FF",
-      dark: "#5A3FD4",
+      main: "#E42278",
+      light: "#ED7BAB",
+      dark: "#E42278",
     },
     success: {
-      main: "#1DB954",
-      light: "#3DDC77",
-      dark: "#148A3C",
+      main: "#ED7BAB",
+      light: "#F5D3DD",
+      dark: "#E42278",
     },
     warning: {
-      main: "#FFB02E",
+      main: "#E42278",
     },
     text: {
-      primary: "#EDEDF2",
-      secondary: "rgba(210,210,225,0.64)",
-      disabled: "rgba(210,210,225,0.34)",
+      primary: "#F9F9F9",
+      secondary: "#F5D3DD",
+      disabled: "rgba(245,211,221,0.42)",
     },
-    divider: "rgba(255,255,255,0.08)",
+    divider: "rgba(245,211,221,0.12)",
   },
   typography: {
     fontFamily: `"Inter", system-ui, sans-serif`,
@@ -110,29 +110,29 @@ const theme = createTheme({
         html { color-scheme: dark; }
 
         body {
-          background-color: #08080B;
-          color: #EDEDF2;
+          background-color: #0D111A;
+          color: #F9F9F9;
           scroll-behavior: smooth;
           font-feature-settings: "ss01", "cv02";
         }
 
         body::-webkit-scrollbar { width: 6px; }
-        body::-webkit-scrollbar-track { background: #08080B; }
+        body::-webkit-scrollbar-track { background: #0D111A; }
         body::-webkit-scrollbar-thumb {
-          background: #1C1C24;
+          background: rgba(245,211,221,0.16);
           border-radius: 3px;
         }
-        body::-webkit-scrollbar-thumb:hover { background: #26262F; }
+        body::-webkit-scrollbar-thumb:hover { background: rgba(245,211,221,0.28); }
 
         ::selection {
-          background: rgba(0,187,249,0.22);
-          color: #fff;
+          background: rgba(228,34,120,0.32);
+          color: #F9F9F9;
         }
 
         a { color: inherit; text-decoration: none; }
 
         :focus-visible {
-          outline: 1px solid #00BBF9;
+          outline: 1px solid #ED7BAB;
           outline-offset: 3px;
           border-radius: 2px;
         }
@@ -161,7 +161,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          backgroundColor: "#0D0D12",
+          backgroundColor: "#0D111A",
         },
       },
     },

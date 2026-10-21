@@ -15,7 +15,7 @@ const projects = [
       id: 3,
       productName: "DoomsProd Music Store",
       description: "Security-hardened full-stack e-commerce platform for selling beats, loop kits, and drum kits. Built with defense-in-depth architecture, OWASP best practices, JWT auth, and PCI-compliant Stripe payments.",
-      filePath: "/Images/beatpage.jpg",
+      filePath: "/Images/beatcommerce.jpg",
     },
   ];
 
