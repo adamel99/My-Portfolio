@@ -1,14 +1,17 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { AppBar, Toolbar, Button, Box, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { AppBar, Toolbar, Button, Box, Typography, Drawer, IconButton, List, ListItemButton, ListItemText, Divider } from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { Terminal, Shield } from "@mui/icons-material";
+import { Close, Menu, Shield } from "@mui/icons-material";
 
 function Navigation() {
   const theme = useTheme();
   const [currentTime, setCurrentTime] = React.useState(new Date());
   const [scrolled, setScrolled] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const closeMobileMenu = () => setMobileOpen(false);
 
   React.useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -35,9 +38,9 @@ function Navigation() {
       elevation={0}
       sx={{
         backdropFilter: "blur(28px)",
-        backgroundColor: scrolled ? "rgba(8,8,14,0.92)" : "rgba(8,8,14,0.6)",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-        px: { xs: 1, md: 4 },
+        backgroundColor: alpha(theme.palette.background.default, scrolled ? 0.96 : 0.82),
+        borderBottom: scrolled ? `1px solid ${theme.palette.divider}` : "1px solid transparent",
+        px: { xs: 1.5, md: 4 },
         transition: "all 0.3s ease",
       }}
     >
@@ -54,10 +57,12 @@ function Navigation() {
         <Box
           component={NavLink}
           to="/"
+          onClick={closeMobileMenu}
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1.5,
+            gap: { xs: 1, sm: 1.5 },
+            minWidth: 0,
             textDecoration: "none",
             opacity: 1,
             transition: "opacity 0.2s ease",
@@ -66,7 +71,7 @@ function Navigation() {
         >
           {/* Simple monogram instead of icon box */}
           <Box sx={{
-            width: 34, height: 34,
+            width: { xs: 32, sm: 34 }, height: { xs: 32, sm: 34 },
             borderRadius: "8px",
             background: `linear-gradient(135deg, ${theme.palette.tertiary.main}22, ${theme.palette.accent.main}12)`,
             border: `1px solid ${theme.palette.tertiary.main}25`,
@@ -84,13 +89,15 @@ function Navigation() {
           <Box>
             <Typography sx={{
               fontWeight: 700, fontFamily: "monospace",
-              fontSize: { xs: "0.88rem", md: "0.95rem" },
+              fontSize: { xs: "0.78rem", sm: "0.88rem", md: "0.95rem" },
               color: theme.palette.text.primary,
-              letterSpacing: "0.02em", lineHeight: 1.2,
+              letterSpacing: "0.01em", lineHeight: 1.2,
+              whiteSpace: "nowrap",
             }}>
               Adam Elhamami
             </Typography>
             <Typography sx={{
+              display: { xs: "none", sm: "block" },
               fontSize: "0.55rem", fontFamily: "monospace",
               color: theme.palette.text.disabled,
               letterSpacing: "0.14em",
@@ -139,7 +146,7 @@ function Navigation() {
         </Box>
 
         {/* Right side */}
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexShrink: 0 }}>
           {/* Live clock */}
           <Box sx={{
             display: { xs: "none", md: "flex" },
@@ -175,32 +182,81 @@ function Navigation() {
             </Typography>
           </Box>
 
-          {/* Mobile nav links */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 0.5 }}>
-            {navLinks.map(({ to, label }) => (
-              <Button
-                key={to}
-                component={NavLink}
-                to={to}
-                sx={{
-                  color: theme.palette.text.disabled,
-                  textTransform: "none",
-                  fontWeight: 500,
-                  fontSize: "0.75rem",
-                  fontFamily: "monospace",
-                  px: 1.25, py: 0.6,
-                  minWidth: "auto",
-                  borderRadius: "6px",
-                  "&.active": { color: theme.palette.text.primary },
-                  "&:hover": { color: theme.palette.text.primary, background: "rgba(255,255,255,0.04)" },
-                }}
-              >
-                {label}
-              </Button>
-            ))}
-          </Box>
+          <IconButton
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation-drawer"
+            onClick={() => setMobileOpen((open) => !open)}
+            sx={{
+              display: { xs: "inline-flex", md: "none" },
+              width: 42,
+              height: 42,
+              color: theme.palette.text.primary,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 1.5,
+              "&:hover": { color: theme.palette.tertiary.main, borderColor: `${theme.palette.tertiary.main}55`, backgroundColor: `${theme.palette.tertiary.main}0A` },
+            }}
+          >
+            {mobileOpen ? <Close /> : <Menu />}
+          </IconButton>
         </Box>
       </Toolbar>
+
+      <Drawer
+        id="mobile-navigation-drawer"
+        anchor="right"
+        open={mobileOpen}
+        onClose={closeMobileMenu}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            width: "min(320px, calc(100vw - 28px))",
+            boxSizing: "border-box",
+            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.background.paper,
+            backgroundImage: "none",
+            borderLeft: `1px solid ${theme.palette.divider}`,
+            px: 2,
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 2 }}>
+          <Typography sx={{ color: theme.palette.tertiary.main, fontFamily: theme.typography.mono, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.12em" }}>
+            NAVIGATION
+          </Typography>
+          <IconButton onClick={closeMobileMenu} aria-label="Close navigation menu" size="small" sx={{ color: theme.palette.text.secondary }}>
+            <Close fontSize="small" />
+          </IconButton>
+        </Box>
+        <Divider sx={{ borderColor: theme.palette.divider, mb: 1.2 }} />
+        <List component="nav" aria-label="Mobile navigation" disablePadding>
+          {navLinks.map(({ to, label }) => (
+            <ListItemButton
+              key={to}
+              component={NavLink}
+              to={to}
+              onClick={closeMobileMenu}
+              sx={{
+                my: 0.45,
+                px: 1.4,
+                py: 1.15,
+                borderRadius: 1.4,
+                color: theme.palette.text.secondary,
+                transition: "all 0.18s ease",
+                "&.active": { color: theme.palette.text.primary, backgroundColor: `${theme.palette.tertiary.main}12`, boxShadow: `inset 2px 0 ${theme.palette.tertiary.main}` },
+                "&:hover": { color: theme.palette.text.primary, backgroundColor: `${theme.palette.tertiary.main}0A` },
+              }}
+            >
+              <ListItemText primary={label} primaryTypographyProps={{ fontFamily: theme.typography.mono, fontSize: "0.92rem", fontWeight: 600 }} />
+            </ListItemButton>
+          ))}
+        </List>
+        <Box sx={{ mt: "auto", py: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Typography sx={{ color: theme.palette.text.disabled, fontFamily: theme.typography.mono, fontSize: "0.68rem", letterSpacing: "0.08em" }}>
+            SECURITY · DEV · AUDIO
+          </Typography>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }
