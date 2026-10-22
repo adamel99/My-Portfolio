@@ -212,7 +212,7 @@ const Resume = () => {
             <Box>
               <Section title="Professional Summary">
                 <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.94rem", md: "0.98rem" }, lineHeight: 1.78, maxWidth: 720 }}>
-                  Entry-level SOC and security analyst with CompTIA Security+, hands-on detection-engineering projects,
+                  SOC and security analyst with CompTIA Security+, hands-on detection-engineering projects,
                   Windows and Linux log analysis, incident-response labs, and secure application-development experience.
                   Comfortable triaging events, mapping activity to MITRE ATT&CK, documenting indicators of compromise,
                   and communicating findings clearly for analyst handoff.
